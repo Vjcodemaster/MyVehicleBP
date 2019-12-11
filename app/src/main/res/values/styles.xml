@@ -8,9 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="ToolbarColoredBackArrow" parent="AppTheme">
+    <!--<style name="ToolbarColoredBackArrow" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:textColorSecondary">@color/colorPrimaryDark</item>
-    </style>
+    </style>-->
     <style name="EditText">
         <item name="android:singleLine">true</item>
         <item name="colorControlNormal">#FFFFFF</item>
