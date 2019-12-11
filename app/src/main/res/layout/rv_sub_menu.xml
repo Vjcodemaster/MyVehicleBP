@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
     android:id="@+id/cv_dynamic_color_bg"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardCornerRadius="10dp"
     android:layout_margin="5dp"
+    android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    android:background="?attr/selectableItemBackground"
     card_view:cardBackgroundColor="@color/colorAccent"
+    card_view:cardCornerRadius="10dp"
     card_view:cardElevation="5dp">
 
     <LinearLayout
@@ -18,8 +18,8 @@
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
             android:id="@+id/tv_submenu_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:layout_marginStart="10dp"
@@ -30,19 +30,19 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
             android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
             android:gravity="center"
-            android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <app_utility.CircleImageView
                 android:id="@+id/recent_rc_avatar"
                 android:layout_width="55dp"
-                android:src="@drawable/car"
-                android:layout_height="55dp" />
+                android:layout_height="55dp"
+                android:src="@drawable/car" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -80,16 +80,14 @@
                     android:layout_height="wrap_content"
                     android:text="05"
                     android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
-                    android:textColor="@android:color/white"
-                     />
+                    android:textColor="@android:color/white" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2599"
                     android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
-                    android:textColor="@android:color/white"
-                     />
+                    android:textColor="@android:color/white" />
 
             </LinearLayout>
 

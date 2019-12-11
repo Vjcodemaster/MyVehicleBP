@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.appbar.AppBarLayout android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:fitsSystemWindows="true"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
     android:background="@android:color/white"
-    android:theme="@style/Theme.MaterialComponents.NoActionBar"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    app:layout_collapseMode="pin"
+    android:elevation="4dp"
+    app:theme="@style/ToolbarColoredBackArrow"
+    android:stateListAnimator="@animator/appbar_elevation"
+    tools:targetApi="lollipop">
 
-    <com.google.android.material.appbar.CollapsingToolbarLayout
+    <!--<com.google.android.material.appbar.CollapsingToolbarLayout
         android:id="@+id/collapsing_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,25 +19,44 @@
         app:contentScrim="@color/colorPrimary"
         android:fitsSystemWindows="true"
         app:expandedTitleGravity="center_horizontal"
-        >
+        >-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="@null"
+            android:src="@mipmap/ic_launcher" />
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
-            android:text="@string/app_name"
-            android:textStyle="bold"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:text="@string/app_name"
+            android:background="?attr/selectableItemBackground"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
             android:textColor="@color/colorPrimaryVeryDark"
-            android:layout_height="wrap_content"/>
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@android:color/transparent"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:layout_collapseMode="pin"
-            />
+            android:textStyle="bold" />
+    </LinearLayout>
 
-    </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-</com.google.android.material.appbar.AppBarLayout>
+    <!--<androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:layout_collapseMode="pin"
+        />-->
+
+    <!--    </com.google.android.material.appbar.CollapsingToolbarLayout>-->
+
+</androidx.appcompat.widget.Toolbar>

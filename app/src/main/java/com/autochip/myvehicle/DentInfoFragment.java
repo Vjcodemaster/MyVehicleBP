@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,22 +14,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import app_utility.Constants;
+import app_utility.OnAdapterInterface;
 import app_utility.OnFragmentInteractionListener;
+import app_utility.StaticReferenceClass;
 import ja.burhanrashid52.photoeditor.PhotoEditor;
 import ja.burhanrashid52.photoeditor.PhotoEditorView;
-import ja.burhanrashid52.photoeditor.PhotoFilter;
 
+import static app_utility.StaticReferenceClass.HIDE_FAB;
 import static app_utility.StaticReferenceClass.REQUEST_CAMERA_CODE;
 import static app_utility.StaticReferenceClass.REQUEST_GALLERY_CODE;
+import static app_utility.StaticReferenceClass.SHOW_FAB;
 
 
 /**
@@ -41,7 +49,7 @@ import static app_utility.StaticReferenceClass.REQUEST_GALLERY_CODE;
  * Use the {@link DentInfoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DentInfoFragment extends Fragment implements OnFragmentInteractionListener {
+public class DentInfoFragment extends Fragment implements OnAdapterInterface {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -50,12 +58,20 @@ public class DentInfoFragment extends Fragment implements OnFragmentInteractionL
     private String mParam2;
 
     private ImageView ivGallery, ivCamera;
+    private TextView tvAddDents;
 
     public static OnFragmentInteractionListener mListener;
+    public static OnAdapterInterface onAdapterInterface;
 
     PhotoEditorView mPhotoEditorView;
 
     PhotoEditor mPhotoEditor;
+
+    RecyclerView recyclerViewDentsInfo;
+    private ViewPager mViewPagerSlideShow;
+    DentsRVAdapter imageViewRVAdapter;
+    FloatingActionButton fabDelete;
+    int nScrollIndex = 0;
 
     public DentInfoFragment() {
         // Required empty public constructor
@@ -85,7 +101,7 @@ public class DentInfoFragment extends Fragment implements OnFragmentInteractionL
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        mListener = this;
+        onAdapterInterface = this;
     }
 
     @Override
@@ -96,13 +112,47 @@ public class DentInfoFragment extends Fragment implements OnFragmentInteractionL
 
         initViews(view);
         onClickListener();
+
+        /*ArrayList<String> alLength = new ArrayList<>();
+        alLength.add("mm");
+        alLength.add("cm");
+        alLength.add("in");*/
+        imageViewRVAdapter = new DentsRVAdapter(getContext(), recyclerViewDentsInfo, 1);
+        recyclerViewDentsInfo.setAdapter(imageViewRVAdapter);
         return view;
     }
 
     private void initViews(View view) {
+        tvAddDents = view.findViewById(R.id.tv_add_dents);
         ivGallery = view.findViewById(R.id.iv_gallery);
         ivCamera = view.findViewById(R.id.iv_camera);
         mPhotoEditorView = view.findViewById(R.id.photoEditorView);
+        recyclerViewDentsInfo = view.findViewById(R.id.rv_dents_info);
+
+        mViewPagerSlideShow = view.findViewById(R.id.viewpager_slideshow);
+        mViewPagerSlideShow.setOffscreenPageLimit(2 - 1);
+
+        fabDelete = view.findViewById(R.id.fab_delete);
+        fabDelete.hide();
+        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        mLinearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerViewDentsInfo.setLayoutManager(mLinearLayoutManager);
+        recyclerViewDentsInfo.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        recyclerViewDentsInfo.setHasFixedSize(true);
+
+        recyclerViewDentsInfo.addOnItemTouchListener(new DentsRVAdapter.RecyclerTouchListener(getActivity(),
+                recyclerViewDentsInfo, new DentsRVAdapter.ClickListener() {
+            @Override
+            public void onClick(View view, final int position) {
+                //Values are passing to activity & to fragment as well
+                nScrollIndex = position;
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+                nScrollIndex = position;
+            }
+        }));
 
         //mPhotoEditorView.getSource().setImageURI();
     }
@@ -134,6 +184,15 @@ public class DentInfoFragment extends Fragment implements OnFragmentInteractionL
                 startActivityForResult(intent, REQUEST_CAMERA_CODE);*/
             }
         });
+
+        tvAddDents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DentsRVAdapter.onAdapterInterface.onAdd();
+                //imageViewRVAdapter
+                //imageViewRVAdapter.notifyItemInserted();
+            }
+        });
     }
 
     private void openImageIntent() {
@@ -143,10 +202,10 @@ public class DentInfoFragment extends Fragment implements OnFragmentInteractionL
         // Determine Uri of camera image to save.
         //final File root = new File(Environment.getExternalStorageDirectory().getPath() + File.separator + "Android/data/" + File.separator + getActivity().getPackageName() + File.separator);
         final File root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                + "/MVehicle");
+                + getActivity().getResources().getString(R.string.folder_name));
         root.mkdirs();
-        final String fname = System.currentTimeMillis() + "my_vehicle";
-        File sdImageMainDirectory = new File(root, fname);
+        final String sFileName = "IMG" + System.currentTimeMillis() + ".png";
+        File sdImageMainDirectory = new File(root, sFileName);
         Uri outputFileUri = Uri.fromFile(sdImageMainDirectory);
 
         // Camera.
@@ -173,7 +232,7 @@ public class DentInfoFragment extends Fragment implements OnFragmentInteractionL
 
         // Add the camera options.
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[]{}));
-        //MainActivity.homeInterfaceListener.onHomeCalled("FILE_URI", nCase, null, outputFileUri);
+        MainActivity.onFragmentInteractionListener.onFragmentChange(StaticReferenceClass.SET_URI, "", outputFileUri);
         getActivity().startActivityForResult(chooserIntent, REQUEST_GALLERY_CODE);
         //onImageUtilsListener.onBitmapCompressed("START_ACTIVITY_FOR_RESULT",1,null, chooserIntent, outputFileUri);
     }
@@ -196,41 +255,25 @@ public class DentInfoFragment extends Fragment implements OnFragmentInteractionL
     }
 
     @Override
-    public void onFragmentChange(String sCase) {
+    public void onAdapterCall(int nCall) {
+        Constants constants = Constants.values()[nCall];
+        switch (constants){
+            case SHOW_FAB:
+                fabDelete.show();
+                break;
+            case HIDE_FAB:
+                fabDelete.hide();
+                break;
+        }
+    }
+
+    @Override
+    public void onAdd() {
 
     }
 
     @Override
-    public void onActivityToFragment(String sCase, Uri uri) {
-        switch (sCase) {
-            case "IMAGE_URI":
+    public void onDelete() {
 
-
-                mPhotoEditor = new PhotoEditor.Builder(getActivity(), mPhotoEditorView)
-                        .setPinchTextScalable(true)
-                        //.setDefaultTextTypeface(mTextRobotoTf)
-                        //.setDefaultEmojiTypeface()
-                        .build();
-
-                mPhotoEditorView.setVisibility(View.VISIBLE);
-                mPhotoEditorView.getSource().setImageURI(uri);
-
-                mPhotoEditor.setBrushDrawingMode(true);
-                mPhotoEditor.setFilterEffect(PhotoFilter.BRIGHTNESS);
-
-
-                /*Bitmap bitmap = null;
-                try {
-                    bitmap=MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                int imageWidth=bitmap.getWidth();
-
-                int imageHeight=bitmap.getHeight();
-                Toast.makeText(getActivity(), ""+ imageWidth + "x"+imageHeight,Toast.LENGTH_LONG).show();*/
-                break;
-        }
     }
 }

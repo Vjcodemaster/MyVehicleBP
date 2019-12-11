@@ -7,30 +7,40 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.text.format.DateFormat;
+
+import com.autochip.myvehicle.MainActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Date;
+
+import static app_utility.StaticReferenceClass.IMAGE_SAVED;
 
 public class MyVehicleAsyncTask extends AsyncTask<String, String, String> {
 
-    Intent data;
     private Uri outputFileUri;
     private ContentResolver contentResolver;
     private Bitmap bitmapImageUtils;
+    private String sFolderNameToSaveImage;
+    File sdImageMainDirectory;
+    private int nCase;
 
-    public MyVehicleAsyncTask(Intent data, Uri outputFileUri, ContentResolver contentResolver){
-        this.data = data;
+    public MyVehicleAsyncTask(Uri outputFileUri, ContentResolver contentResolver, String sFolderNameToSaveImage) {
         this.outputFileUri = outputFileUri;
         this.contentResolver = contentResolver;
+        this.sFolderNameToSaveImage = sFolderNameToSaveImage;
     }
 
     @Override
     protected String doInBackground(String... strings) {
-        final boolean isCamera;
+        nCase = Integer.valueOf(strings[0]);
+        switch (nCase){
+            case 1:
+                saveFileAsBitmap(outputFileUri);
+                break;
+        }
+
+        /*final boolean isCamera;
         if (data == null) {
             isCamera = true;
         } else {
@@ -38,7 +48,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, String, String> {
             isCamera = action != null && action.equals(MediaStore.ACTION_IMAGE_CAPTURE);
         }
         File storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                + "/MyVehicle");
+                + sFolderNameToSaveImage);
         Uri selectedImageUri;
         if (isCamera) {
             selectedImageUri = outputFileUri;
@@ -57,28 +67,70 @@ public class MyVehicleAsyncTask extends AsyncTask<String, String, String> {
         } else {
             selectedImageUri = data.getData();
             //Bitmap bitmap = BitmapFactory.decodeFile(selectedImageUri.getPath());
-            //saveFileAsBitmap(selectedImageUri);
-                    /*Bitmap bitmap = null;
+            saveFileAsBitmap(selectedImageUri);
+                    *//*Bitmap bitmap = null;
                     try {
                         bitmap = MediaStore.Images.Media.getBitmap(MainActivity.this.getContentResolver(), selectedImageUri);
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }*/
-                    /*if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
+                    }*//*
+         *//*if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
                         ImageUtils imageUtils = new ImageUtils(root, selectedImageUri);
-                    } else {*/
+                    } else {*//*
             //DialogMultiple.mListener.onBitmapCompressed("SET_BITMAP", 1, bitmap, null, null);
             //}
-        }
+        }*/
         return null;
     }
 
     @Override
     protected void onPostExecute(String result) {
-
+        switch (nCase){
+            case 1:
+                MainActivity.onFragmentInteractionListener.onFragmentChange(IMAGE_SAVED, "", Uri.fromFile(sdImageMainDirectory));
+                break;
+        }
     }
 
-    private String saveImage(Bitmap image) {
+    private void saveFileAsBitmap(Uri selectedImageUri) {
+        Bitmap bitmap = null;
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(contentResolver, selectedImageUri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Bitmap bitmap = ImageUtils.getInstant().getCompressedBitmap(selectedImageUri.getPath());
+        FileOutputStream fileOutputStream = null;
+        String imageFileName = "IMG" + System.currentTimeMillis() + ".jpg";
+        //final String fname = System.currentTimeMillis() + "insurance";
+        final File root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                + sFolderNameToSaveImage);
+        sdImageMainDirectory = new File(root, imageFileName);
+        //outputFileUri = Uri.fromFile(sdImageMainDirectory);
+
+        assert bitmap != null;
+        if (bitmap.getWidth() > 1080 && bitmap.getHeight() > 1920) {
+            ImageUtils imageUtils = new ImageUtils();
+        }
+        try {
+            fileOutputStream = new FileOutputStream(sdImageMainDirectory);
+            // PNG is a loss less format, the compression factor (100) is ignored
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fileOutputStream != null) {
+                    fileOutputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /*private String saveImage(Bitmap image) {
         String savedImagePath = null;
 
         Date d = new Date();
@@ -107,5 +159,5 @@ public class MyVehicleAsyncTask extends AsyncTask<String, String, String> {
             //Toast.makeText(mContext, "IMAGE SAVED", Toast.LENGTH_LONG).show();
         }
         return savedImagePath;
-    }
+    }*/
 }

@@ -1,206 +1,419 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    android:orientation="vertical"
     tools:context=".DentInfoFragment">
 
-    <ja.burhanrashid52.photoeditor.PhotoEditorView
-        android:id="@+id/photoEditorView"
-        android:visibility="gone"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-    <!--<com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar"
+        <ja.burhanrashid52.photoeditor.PhotoEditorView
+            android:id="@+id/photoEditorView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">-->
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="5dp"
-        android:layout_marginTop="10dp"
-        android:layout_weight=".05"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        card_view:cardBackgroundColor="@android:color/white"
-        card_view:cardCornerRadius="10dp"
-        card_view:cardElevation="5dp">
-
-        <FrameLayout
+            android:visibility="gone" />
+        <!--<com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="200dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <androidx.viewpager.widget.ViewPager
-                android:id="@+id/viewpager_slideshow"
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:contentScrim="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">-->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight=".06"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            card_view:cardBackgroundColor="@android:color/white"
+            card_view:cardCornerRadius="8dp"
+            card_view:cardElevation="5dp">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.viewpager.widget.ViewPager
+                    android:id="@+id/viewpager_slideshow"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:transitionName="@string/viewpager_transition"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    tools:targetApi="lollipop" />
+
+                <ImageView
+                    android:id="@+id/products_rv_image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/white"
+                    android:contentDescription="@string/app_name"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/demo_car" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:alpha=".3"
+                    android:background="@android:color/black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Photos"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold" />
+
+                <!--<ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center|start"
+                    android:layout_marginStart="5dp"
+                    android:src="@drawable/arrow_left" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center|end"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/arrow_right" />-->
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:gravity="end"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/iv_gallery"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:src="@drawable/gallery"
+                        tools:ignore="ContentDescription" />
+
+                    <ImageView
+                        android:id="@+id/iv_camera"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:src="@drawable/camera"
+                        tools:ignore="ContentDescription" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_bubble_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center"
+                    android:orientation="horizontal"
+                    android:transitionName="@string/ll_bubble_transition"
+                    tools:targetApi="lollipop" />
+                <!--<RatingBar
+                    android:id="@+id/ratingBar"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:isIndicator="true"
+                    android:numStars="5"
+                    android:rating="3"
+                    android:stepSize="0.1"/>-->
+            </FrameLayout>
+
+
+            <!-- <com.google.android.material.appbar.MaterialToolbar
+                 android:id="@+id/toolbar"
+                 android:layout_width="match_parent"
+                 android:layout_height="5dp"
+                 app:layout_collapseMode="pin"/>-->
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_marginTop="5dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            card_view:cardBackgroundColor="@android:color/white"
+            card_view:cardCornerRadius="8dp"
+            card_view:cardElevation="5dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
-                android:transitionName="@string/viewpager_transition"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                tools:targetApi="lollipop"/>
+                android:orientation="vertical">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/estimation"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/colorAccent"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:baselineAligned="false"
+                    android:gravity="bottom">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/total_time"
+                        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+                        android:textColor="@color/colorPrimaryVeryDark" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:background="@drawable/tv_bg"
+                        android:gravity="center"
+                        android:minWidth="50dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:text="100.5"
+                        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+                        android:textColor="@android:color/holo_red_light"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:text="@string/hours"
+                        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+                        android:textColor="@color/colorPrimaryVeryDark"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:gravity="end">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/total_dents"
+                            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+                            android:textColor="@color/colorPrimaryVeryDark" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:background="@drawable/tv_bg"
+                            android:minWidth="50dp"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="100.5"
+                            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+                            android:textColor="@android:color/holo_red_light"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="8dp"
+                    android:baselineAligned="false"
+                    android:gravity="bottom">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/total_cost"
+                        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+                        android:textColor="@color/colorPrimaryVeryDark" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:background="@drawable/tv_bg"
+                        android:gravity="center"
+                        android:minWidth="60dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:text="100.5"
+                        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+                        android:textColor="@android:color/holo_red_light"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:text="@string/rupees"
+                        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+                        android:textColor="@color/colorPrimaryVeryDark"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            card_view:cardBackgroundColor="@android:color/white"
+            card_view:cardCornerRadius="4dp"
+            card_view:cardElevation="1dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/mtv_dent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="5dp"
+                    android:text="@string/dents"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    android:textColor="@color/colorAccent"
+                    android:textStyle="bold" />
+
+                <!-- <com.google.android.material.textview.MaterialTextView
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_marginStart="10dp"
+                     android:text="3"
+                     android:layout_toEndOf="@+id/mtv_dent"
+                     android:layout_centerInParent="true"
+                     android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                     android:textColor="@android:color/holo_red_light"
+                     android:textStyle="bold" />-->
+
+                <TextView
+                    android:id="@+id/tv_add_dents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerInParent="true"
+                    android:layout_marginEnd="5dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:drawableStart="@drawable/circle_plus"
+                    android:drawablePadding="5dp"
+                    android:gravity="center"
+                    android:text="@string/add_dent"
+                    android:textAppearance="@android:style/TextAppearance.Small"
+                    android:textColor="@color/colorAccent"
+                    app:iconGravity="start" />
+
+
+            </RelativeLayout>
+
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!--
+                </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+            </com.google.android.material.appbar.AppBarLayout>-->
+
+        <!--<com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".05"
+            android:layout_margin="5dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginTop="10dp"
+            card_view:cardBackgroundColor="@android:color/white"
+            card_view:cardCornerRadius="10dp"
+            card_view:cardElevation="5dp">
 
             <ImageView
-                android:id="@+id/products_rv_image_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/white"
-                android:contentDescription="@string/app_name"
-                android:scaleType="fitXY"
-                android:src="@drawable/demo_car" />
+                android:layout_width="40dp"
+                android:src="@drawable/arrow_left"
+                android:layout_height="40dp"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:alpha=".3"
-                android:background="@android:color/black" />
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_gravity="end"
+                android:src="@drawable/arrow_right"
+                android:layout_height="40dp"/>
 
-            <TextView
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_weight=".05"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_submenu_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Photos"
+                android:layout_gravity="start"
+                android:layout_marginStart="10dp"
+                android:text="Roof"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
                 android:textColor="@android:color/white"
                 android:textStyle="bold" />
 
-            <!--<ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center|start"
-                android:layout_marginStart="5dp"
-                android:src="@drawable/arrow_left" />
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center|end"
-                android:layout_marginEnd="5dp"
-                android:src="@drawable/arrow_right" />-->
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:gravity="end"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/iv_gallery"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:src="@drawable/gallery"
-                    tools:ignore="ContentDescription" />
-
-                <ImageView
-                    android:id="@+id/iv_camera"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:src="@drawable/camera"
-                    tools:ignore="ContentDescription" />
-
-            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>-->
 
 
-            <!--<RatingBar
-                android:id="@+id/ratingBar"
-                style="?android:attr/ratingBarStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_marginBottom="5dp"
-                android:layout_marginEnd="5dp"
-                android:isIndicator="true"
-                android:numStars="5"
-                android:rating="3"
-                android:stepSize="0.1"/>-->
-        </FrameLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_dents_info"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_weight=".1"
+            android:background="@android:color/white" />
 
-        <LinearLayout
-            android:id="@+id/ll_bubble_parent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center"
-            android:orientation="horizontal"
-            android:transitionName="@string/ll_bubble_transition"
-            tools:targetApi="lollipop" />
+    </LinearLayout>
 
-        <!-- <com.google.android.material.appbar.MaterialToolbar
-             android:id="@+id/toolbar"
-             android:layout_width="match_parent"
-             android:layout_height="5dp"
-             app:layout_collapseMode="pin"/>-->
-    </com.google.android.material.card.MaterialCardView>
-    <!--
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-        </com.google.android.material.appbar.AppBarLayout>-->
-
-    <!--<com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".05"
-        android:layout_margin="5dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:layout_marginTop="10dp"
-        card_view:cardBackgroundColor="@android:color/white"
-        card_view:cardCornerRadius="10dp"
-        card_view:cardElevation="5dp">
-
-        <ImageView
-            android:layout_width="40dp"
-            android:src="@drawable/arrow_left"
-            android:layout_height="40dp"/>
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_gravity="end"
-            android:src="@drawable/arrow_right"
-            android:layout_height="40dp"/>
-
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_weight=".05"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_submenu_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginStart="10dp"
-            android:text="Roof"
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
-
-    </com.google.android.material.card.MaterialCardView>-->
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_sub_menu"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="10dp"
-        android:layout_weight=".1"
-        android:background="@android:color/white" />
-</LinearLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        app:backgroundTint="@android:color/holo_red_light"
+        app:fabSize="mini"
+        app:srcCompat="@drawable/delete_forever"
+        app:tint="@null" />
+</FrameLayout>

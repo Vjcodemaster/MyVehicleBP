@@ -7,42 +7,88 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.util.ArrayList;
+
+import app_utility.Constants;
+import app_utility.DataBaseHelper;
+import app_utility.DatabaseHandler;
 import app_utility.MyVehicleAsyncTask;
 import app_utility.OnFragmentInteractionListener;
 import app_utility.PermissionHandler;
+import photo.editor.EditImageActivity;
 
 import static app_utility.PermissionHandler.APP_PERMISSION;
+import static app_utility.StaticReferenceClass.INVISIBLE;
+import static app_utility.StaticReferenceClass.VISIBLE;
 
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
     private Intent data;
     private int nPermissionFlag = 0;
+    private Uri uriImage;
 
+    private DatabaseHandler dbHandler;
+    ArrayList<String> alMainCategory;
     public static OnFragmentInteractionListener onFragmentInteractionListener;
+    Menu menu;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         onFragmentInteractionListener = this;
+        dbHandler = new DatabaseHandler(MainActivity.this);
+        initViews();
+
+        alMainCategory = new ArrayList<>();
+        alMainCategory.add("Body & Paint");
+        alMainCategory.add("Mechanical Service");
+        alMainCategory.add("Full Service");
+
+        ArrayList<String> alSubMenuName = new ArrayList<>();
+        alSubMenuName.add("Roof");
+        alSubMenuName.add("Hood");
+        alSubMenuName.add("Front door left");
+        alSubMenuName.add("Front door right");
+        alSubMenuName.add("Back door left");
+        alSubMenuName.add("Back door right");
+
+
+        String sSubCategory = TextUtils.join(",", alSubMenuName);
+
+        for (int i = 0; i < alMainCategory.size(); i++) {
+            dbHandler.addDataToTableMain(new DataBaseHelper(alMainCategory.get(i), sSubCategory));
+        }
     }
 
-    public void onButtonClick(View v){
-        switch (v.getId()){
+    private void initViews(){
+        toolbar = findViewById(R.id.toolbar_layout);
+        setSupportActionBar(toolbar);
+    }
+
+    public void onButtonClick(View v) {
+        switch (v.getId()) {
             case R.id.btn_body_paint:
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                Fragment subMenuFragment = SubMenuFragment.newInstance("","");
+                Fragment subMenuFragment = SubMenuFragment.newInstance(alMainCategory.get(0), "");
                 ft.add(R.id.fl_container, subMenuFragment);
                 ft.addToBackStack(null);
                 ft.commit();
-            break;
+                toolbarBackArrowVisibility(VISIBLE);
+                break;
         }
     }
 
@@ -52,6 +98,28 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         if (!PermissionHandler.hasPermissions(MainActivity.this, APP_PERMISSION)) {
             ActivityCompat.requestPermissions(MainActivity.this, APP_PERMISSION, 1);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu, this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.toobar_menu, menu);
+        this.menu = menu;
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            //handles open and close of home button of actionbar/toolbar
+            case R.id.action_save:
+                //mDrawerLayout.openDrawer(GravityCompat.START);
+                break;
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -114,14 +182,15 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         switch (requestCode) {
             case 241:
                 if (resultCode == Activity.RESULT_OK) {
-                    this.data = data;
                     Uri uriSelectedImage = data.getData();
-                    //imageview.setImageURI(selectedImage);
-                    DentInfoFragment.mListener.onActivityToFragment("IMAGE_URI", uriSelectedImage);
-                    //new MyVehicleAsyncTask(data, null, getContentResolver()).execute();
+                    if (uriSelectedImage == null) {
+                        Intent in = new Intent(MainActivity.this, EditImageActivity.class);
+                        in.setData(uriImage);
+                        startActivity(in);
+                    } else {
+                        new MyVehicleAsyncTask(uriSelectedImage, getContentResolver(), getResources().getString(R.string.folder_name)).execute("1");
+                    }
                 }
-                //Uri.fromFile(new File("/sdcard/sample.jpg"))
-                //saveImage();
                 break;
             case 3:
                 if (resultCode != Activity.RESULT_OK) {
@@ -129,6 +198,41 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 }
                 break;
         }
+    }
+
+    private void toolbarBackArrowVisibility(int nVisibility) {
+        //menu.findItem(R.id.action_save).setVisible(true);
+        if (nVisibility == VISIBLE)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        else
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+    }
+
+    private void menuItemHandler(MenuItem item, int nVisibility) {
+        //menu.findItem(R.id.action_save).setVisible(true);
+        if (nVisibility == VISIBLE)
+            item.setVisible(true);
+        else
+            item.setVisible(false);
+    }
+
+
+    @Override
+    public void onBackPressed(){
+
+        if(getSupportFragmentManager().getBackStackEntryCount()>1) {
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fl_container);
+            //currentFragment.getClass().getName();
+            //String fragmentTag = getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
+            if(currentFragment.getClass().getName().equals(DentInfoFragment.class.getName()))
+                menuItemHandler(menu.findItem(R.id.action_save), INVISIBLE);
+        } else
+            toolbarBackArrowVisibility(INVISIBLE);
+        super.onBackPressed();
+        /*if(getSupportFragmentManager().getBackStackEntryCount()==0) {
+            //menuItemHandler(menu.findItem(R.id.action_save), INVISIBLE);
+            toolbarBackArrowVisibility(INVISIBLE);
+        }*/
     }
 
     /*private String saveImage(Bitmap image) {
@@ -163,14 +267,25 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     }*/
 
     @Override
-    public void onFragmentChange(String sCase) {
-        switch (sCase){
-            case "OPEN_DENT_FRAGMENT":
+    public void onFragmentChange(int nCase, String sCase, Uri uri) {
+        Constants constants = Constants.values()[nCase];
+        switch (constants) {
+            case OPEN_DENT_FRAGMENT:
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                Fragment subMenuFragment = DentInfoFragment.newInstance("","");
+                Fragment subMenuFragment = DentInfoFragment.newInstance("", "");
                 ft.add(R.id.fl_container, subMenuFragment);
                 ft.addToBackStack(null);
                 ft.commit();
+                menuItemHandler(menu.findItem(R.id.action_save), VISIBLE);
+                toolbarBackArrowVisibility(VISIBLE);
+                break;
+            case SET_URI:
+                uriImage = uri;
+                break;
+            case IMAGE_SAVED:
+                Intent in = new Intent(MainActivity.this, EditImageActivity.class);
+                in.setData(uri);
+                startActivity(in);
                 break;
         }
     }

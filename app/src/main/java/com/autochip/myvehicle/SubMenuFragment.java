@@ -15,7 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import app_utility.DatabaseHandler;
 import app_utility.OnFragmentInteractionListener;
 
 
@@ -32,11 +34,12 @@ public class SubMenuFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private String mParam1;
+    private String mMainCategory;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
+    DatabaseHandler dbHandler;
     RecyclerView recyclerViewSubMenu;
 
 
@@ -65,9 +68,10 @@ public class SubMenuFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            mMainCategory = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        dbHandler = new DatabaseHandler(getContext());
     }
 
     @Override
@@ -98,13 +102,13 @@ public class SubMenuFragment extends Fragment {
         recyclerViewSubMenu.setHasFixedSize(true);
         recyclerViewSubMenu.setLayoutManager(mLinearLayoutManager);
 
-        ArrayList<String> alSubMenuName = new ArrayList<>();
-        alSubMenuName.add("Roof");
+        ArrayList<String> alSubMenuName = new ArrayList<>(Arrays.asList(dbHandler.getSCByMCNameMainTable(mMainCategory).split(",")));
+       /* alSubMenuName.add("Roof");
         alSubMenuName.add("Hood");
         alSubMenuName.add("Front door left");
         alSubMenuName.add("Front door right");
         alSubMenuName.add("Back door left");
-        alSubMenuName.add("Back door right");
+        alSubMenuName.add("Back door right");*/
 
         SubMenuRVAdapter imageViewRVAdapter = new SubMenuRVAdapter(getContext(), recyclerViewSubMenu, alSubMenuName);
         recyclerViewSubMenu.setAdapter(imageViewRVAdapter);

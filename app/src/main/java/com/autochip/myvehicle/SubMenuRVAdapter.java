@@ -43,6 +43,7 @@ public class SubMenuRVAdapter extends RecyclerView.Adapter<SubMenuRVAdapter.Menu
     public void onBindViewHolder(@NonNull final MenuItemTabHolder holder, final int position) {
 
         int color= ((int)(Math.random()*16777215)) | (0xFF << 24);
+
         holder.cvDynamicParentBG.setCardBackgroundColor(color);
 
         holder.tvSubMenuName.setText(alSubMenuNames.get(position));
@@ -50,7 +51,7 @@ public class SubMenuRVAdapter extends RecyclerView.Adapter<SubMenuRVAdapter.Menu
         holder.cvDynamicParentBG.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.onFragmentInteractionListener.onFragmentChange(StaticReferenceClass.OPEN_DENT_FRAGMENT);
+                MainActivity.onFragmentInteractionListener.onFragmentChange(StaticReferenceClass.OPEN_DENT_FRAGMENT, "", null);
             }
         });
 
