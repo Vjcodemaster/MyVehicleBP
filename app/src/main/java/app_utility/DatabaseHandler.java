@@ -68,7 +68,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + KEY_MAIN_CATEGORY + " TEXT, " //can be in multiple rows
                 + KEY_SUB_CATEGORY + " TEXT, " //can be in multiple rows
                 + KEY_IMAGE_PATH + " TEXT, " //separated by comma
-                + KEY_INDIVIDUAL_DENT_COUNT + " TEXT, " //separated by comma
+                //+ KEY_INDIVIDUAL_DENT_COUNT + " TEXT, " //separated by comma
                 + KEY_INDIVIDUAL_TIME + " TEXT, " //separated by comma
                 + KEY_INDIVIDUAL_COST + " TEXT, " //separated by comma
                 + KEY_INDIVIDUAL_LENGTH + " TEXT, " //separated by comma
@@ -116,7 +116,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_MAIN_CATEGORY, dataBaseHelper.get_main_category());
         values.put(KEY_SUB_CATEGORY, dataBaseHelper.get_sub_category());
         values.put(KEY_IMAGE_PATH, dataBaseHelper.get_image_path());
-        values.put(KEY_INDIVIDUAL_DENT_COUNT, dataBaseHelper.get_individual_dent_count());
+        //values.put(KEY_INDIVIDUAL_DENT_COUNT, dataBaseHelper.get_individual_dent_count());
         values.put(KEY_INDIVIDUAL_TIME, dataBaseHelper.get_individual_time());
         values.put(KEY_INDIVIDUAL_COST, dataBaseHelper.get_individual_cost());
         values.put(KEY_INDIVIDUAL_LENGTH, dataBaseHelper.get_individual_length());
@@ -129,6 +129,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.insert(TABLE_SERVICE, null, values);
 
         db.close(); // Closing database connection
+    }
+
+    public long addImagePathToServiceTable(DataBaseHelper dataBaseHelper) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        //values.put(KEY_ID, dataBaseHelper.getID());
+        values.put(KEY_MAIN_CATEGORY, dataBaseHelper.get_main_category());
+        values.put(KEY_SUB_CATEGORY, dataBaseHelper.get_sub_category());
+        values.put(KEY_IMAGE_PATH, dataBaseHelper.get_image_path());
+        //values.put(KEY_INDIVIDUAL_DENT_COUNT, dataBaseHelper.get_individual_dent_count());
+       /* values.put(KEY_INDIVIDUAL_TIME, dataBaseHelper.get_individual_time());
+        values.put(KEY_INDIVIDUAL_COST, dataBaseHelper.get_individual_cost());
+        values.put(KEY_INDIVIDUAL_LENGTH, dataBaseHelper.get_individual_length());
+        values.put(KEY_INDIVIDUAL_WIDTH, dataBaseHelper.get_individual_width());
+        values.put(KEY_INDIVIDUAL_DEPTH, dataBaseHelper.get_individual_depth());
+        values.put(KEY_TOTAL_DENT_COUNT, dataBaseHelper.get_total_dent_count());
+        values.put(KEY_TOTAL_TIME, dataBaseHelper.get_total_time());
+        values.put(KEY_TOTAL_COST, dataBaseHelper.get_total_cost());*/
+        // Inserting Row
+        long lRowID = db.insert(TABLE_SERVICE, null, values);
+
+        db.close(); // Closing database connection
+        return lRowID;
     }
 
     public List<DataBaseHelper> getAllServiceData() {

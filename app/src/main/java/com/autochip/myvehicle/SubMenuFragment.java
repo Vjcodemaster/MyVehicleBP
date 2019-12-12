@@ -110,7 +110,7 @@ public class SubMenuFragment extends Fragment {
         alSubMenuName.add("Back door left");
         alSubMenuName.add("Back door right");*/
 
-        SubMenuRVAdapter imageViewRVAdapter = new SubMenuRVAdapter(getContext(), recyclerViewSubMenu, alSubMenuName);
+        SubMenuRVAdapter imageViewRVAdapter = new SubMenuRVAdapter(getContext(), recyclerViewSubMenu, mMainCategory,alSubMenuName);
         recyclerViewSubMenu.setAdapter(imageViewRVAdapter);
     }
     @Override

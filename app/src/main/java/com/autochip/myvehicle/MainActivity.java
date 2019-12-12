@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,6 +31,8 @@ import app_utility.PermissionHandler;
 import photo.editor.EditImageActivity;
 
 import static app_utility.PermissionHandler.APP_PERMISSION;
+import static app_utility.StaticReferenceClass.CURRENT_MAIN_CATEGORY;
+import static app_utility.StaticReferenceClass.CURRENT_SUB_CATEGORY;
 import static app_utility.StaticReferenceClass.INVISIBLE;
 import static app_utility.StaticReferenceClass.VISIBLE;
 
@@ -37,6 +40,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private Intent data;
     private int nPermissionFlag = 0;
     private Uri uriImage;
+
+    private String sCurrentMainCategory;
+    private String sCurrentSubCategory;
 
     private DatabaseHandler dbHandler;
     ArrayList<String> alMainCategory;
@@ -196,6 +202,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                     MainActivity.this.finish();
                 }
                 break;
+            /*case 242:
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                break;*/
         }
     }
 
@@ -270,8 +279,10 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         Constants constants = Constants.values()[nCase];
         switch (constants) {
             case OPEN_DENT_FRAGMENT:
+                sCurrentMainCategory = sCase.split(",")[0];
+                sCurrentSubCategory = sCase.split(",")[1];
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                Fragment subMenuFragment = DentInfoFragment.newInstance("", "");
+                Fragment subMenuFragment = DentInfoFragment.newInstance(sCurrentMainCategory, sCurrentSubCategory);
                 ft.add(R.id.fl_container, subMenuFragment);
                 ft.addToBackStack(null);
                 ft.commit();
@@ -283,6 +294,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 break;
             case IMAGE_SAVED:
                 Intent in = new Intent(MainActivity.this, EditImageActivity.class);
+                //in.putExtra(CURRENT_MAIN_CATEGORY, sCurrentMainCategory);
+                //in.putExtra(CURRENT_SUB_CATEGORY, sCurrentSubCategory);
                 in.setData(uri);
                 startActivity(in);
                 break;
@@ -290,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     }
 
     @Override
-    public void onActivityToFragment(String sCase, Uri uri) {
+    public void onActivityToFragment(int nCase, String sCase, Uri uri) {
 
     }
 }

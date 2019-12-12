@@ -25,11 +25,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.ChangeBounds;
 import androidx.transition.TransitionManager;
 
+import com.autochip.myvehicle.DentInfoFragment;
 import com.autochip.myvehicle.R;
 
 import java.io.File;
 import java.io.IOException;
 
+import app_utility.DataBaseHelper;
+import app_utility.DatabaseHandler;
 import ja.burhanrashid52.photoeditor.OnPhotoEditorListener;
 import ja.burhanrashid52.photoeditor.PhotoEditor;
 import ja.burhanrashid52.photoeditor.PhotoEditorView;
@@ -42,6 +45,10 @@ import photo.editor.filters.FilterListener;
 import photo.editor.filters.FilterViewAdapter;
 import photo.editor.tools.EditingToolsAdapter;
 import photo.editor.tools.ToolType;
+
+import static app_utility.StaticReferenceClass.CURRENT_MAIN_CATEGORY;
+import static app_utility.StaticReferenceClass.CURRENT_SUB_CATEGORY;
+import static app_utility.StaticReferenceClass.SET_URI;
 
 public class EditImageActivity extends BaseActivity implements OnPhotoEditorListener,
         View.OnClickListener,
@@ -67,6 +74,8 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
     private ConstraintSet mConstraintSet = new ConstraintSet();
     private boolean mIsFilterVisible;
     Uri uriImage;
+    //String sMainCategoryName;
+    //String sSubCategoryName;
 
 
     @Override
@@ -74,6 +83,8 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         super.onCreate(savedInstanceState);
         makeFullScreen();
         setContentView(R.layout.activity_edit_image);
+        //sMainCategoryName = getIntent().getExtras().getString(CURRENT_MAIN_CATEGORY);
+        //sSubCategoryName = getIntent().getExtras().getString(CURRENT_SUB_CATEGORY);
         uriImage = getIntent().getData();
 
         initViews();
@@ -241,6 +252,8 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                     public void onSuccess(@NonNull String imagePath) {
                         hideLoading();
                         showSnackbar("Image Saved Successfully");
+
+                        DentInfoFragment.mListener.onActivityToFragment(SET_URI, "", Uri.fromFile(new File(imagePath)));
                         mPhotoEditorView.getSource().setImageURI(Uri.fromFile(new File(imagePath)));
                     }
 

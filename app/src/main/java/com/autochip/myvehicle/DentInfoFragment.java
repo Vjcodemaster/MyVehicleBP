@@ -14,8 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,13 +35,11 @@ import app_utility.Constants;
 import app_utility.OnAdapterInterface;
 import app_utility.OnFragmentInteractionListener;
 import app_utility.StaticReferenceClass;
+import app_utility.ZoomOutPageTransformer;
 import ja.burhanrashid52.photoeditor.PhotoEditor;
 import ja.burhanrashid52.photoeditor.PhotoEditorView;
 
-import static app_utility.StaticReferenceClass.HIDE_FAB;
-import static app_utility.StaticReferenceClass.REQUEST_CAMERA_CODE;
 import static app_utility.StaticReferenceClass.REQUEST_GALLERY_CODE;
-import static app_utility.StaticReferenceClass.SHOW_FAB;
 
 
 /**
@@ -49,17 +50,20 @@ import static app_utility.StaticReferenceClass.SHOW_FAB;
  * Use the {@link DentInfoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DentInfoFragment extends Fragment implements OnAdapterInterface {
+public class DentInfoFragment extends Fragment implements OnAdapterInterface, OnFragmentInteractionListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private String mParam1;
-    private String mParam2;
+    private String sMainCategory;
+    private String sSubCategory;
 
-    private ImageView ivGallery, ivCamera;
-    private TextView tvAddDents;
+    private ImageView ivGallery, ivCamera, ivDentView;
+    private TextView tvAddDents, tvPhotoStatus;
 
+    private LinearLayout llBubbleParent;
+    private ImageView[] imageViews;
+    private ArrayList<ImageView> alBubbleViews = new ArrayList<>();
     public static OnFragmentInteractionListener mListener;
     public static OnAdapterInterface onAdapterInterface;
 
@@ -72,6 +76,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface {
     DentsRVAdapter imageViewRVAdapter;
     FloatingActionButton fabDelete;
     int nScrollIndex = 0;
+    ArrayList<String> alImagePath = new ArrayList<>();
 
     public DentInfoFragment() {
         // Required empty public constructor
@@ -98,10 +103,11 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            sMainCategory = getArguments().getString(ARG_PARAM1);
+            sSubCategory = getArguments().getString(ARG_PARAM2);
         }
         onAdapterInterface = this;
+        mListener = this;
     }
 
     @Override
@@ -126,6 +132,8 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface {
         tvAddDents = view.findViewById(R.id.tv_add_dents);
         ivGallery = view.findViewById(R.id.iv_gallery);
         ivCamera = view.findViewById(R.id.iv_camera);
+        tvPhotoStatus = view.findViewById(R.id.tv_photo_status);
+        //ivDentView = view.findViewById(R.id.iv_dent_view);
         mPhotoEditorView = view.findViewById(R.id.photoEditorView);
         recyclerViewDentsInfo = view.findViewById(R.id.rv_dents_info);
 
@@ -134,6 +142,9 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface {
 
         fabDelete = view.findViewById(R.id.fab_delete);
         fabDelete.hide();
+
+        llBubbleParent = view.findViewById(R.id.ll_bubble_parent);
+
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mLinearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerViewDentsInfo.setLayoutManager(mLinearLayoutManager);
@@ -158,6 +169,10 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface {
     }
 
     private void onClickListener() {
+        if (alImagePath.size() > 0) {
+            tvPhotoStatus.setVisibility(View.GONE);
+        }
+
         ivGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -173,10 +188,11 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface {
         ivCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                /*Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivityForResult(takePictureIntent, REQUEST_CAMERA_CODE);
-                }
+                }*/
+                openImageIntent();
                 /*Intent intent = new Intent();
                 intent.setAction(android.content.Intent.ACTION_VIEW);
                 intent.setType("image/*");
@@ -193,6 +209,38 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface {
                 //imageViewRVAdapter.notifyItemInserted();
             }
         });
+
+        mViewPagerSlideShow.setPageTransformer(false, new ViewPager.PageTransformer() {
+            @Override
+            public void transformPage(@NonNull View page, float position) {
+                ZoomOutPageTransformer zoomOutPageTransformer = new ZoomOutPageTransformer();
+                zoomOutPageTransformer.transformPage(page, position);
+            }
+        });
+
+        mViewPagerSlideShow.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                for (int i = 0; i < alBubbleViews.size(); i++) {
+                    if (i == position) {
+                        alBubbleViews.get(i).setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_solid, null));
+                    } else {
+                        alBubbleViews.get(i).setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_holo, null));
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
     }
 
     private void openImageIntent() {
@@ -257,7 +305,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface {
     @Override
     public void onAdapterCall(int nCall) {
         Constants constants = Constants.values()[nCall];
-        switch (constants){
+        switch (constants) {
             case SHOW_FAB:
                 fabDelete.show();
                 break;
@@ -275,5 +323,62 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface {
     @Override
     public void onDelete() {
 
+    }
+
+    @Override
+    public void onFragmentChange(int nCase, String sCase, Uri uri) {
+
+    }
+
+    @Override
+    public void onActivityToFragment(int nCase, String sCase, Uri uri) {
+        Constants constants = Constants.values()[nCase];
+        switch (constants) {
+            case SET_URI:
+                alImagePath.add(uri.getPath());
+                DentInfoImagePagerAdapter dentInfoImagePagerAdapter = new DentInfoImagePagerAdapter(getContext(), alImagePath);
+                mViewPagerSlideShow.setAdapter(dentInfoImagePagerAdapter);
+                if (alImagePath.size() > 0) {
+                    tvPhotoStatus.setVisibility(View.GONE);
+                }
+                ImageView imageView;
+                imageView = new ImageView(getContext());
+                    /*
+                    height and width of bubble
+                    */
+                LinearLayout.LayoutParams layoutParamsIV = new LinearLayout.LayoutParams(10, 10);
+                layoutParamsIV.setMargins(5, 10, 5, 10);
+                imageView.setLayoutParams(layoutParamsIV);
+                if (alBubbleViews.size()==0) {
+                    imageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_solid, null));
+                } else {
+                    imageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_holo, null));
+                }
+                alBubbleViews.add(imageView);
+                llBubbleParent.addView(imageView);
+                //imageViews = new ImageView[alImagePath.size()];
+
+                //DatabaseHandler dbHandler = new DatabaseHandler(getContext());
+                //dbHandler.addImagePathToServiceTable(new DataBaseHelper(sMainCategory, sSubCategory, uri.getPath()));
+                //ivDentView.setImageURI(uri);
+
+                /*for (int i = 0; i < alImagePath.size(); i++) {
+                    imageView = new ImageView(getContext());
+                    *//*
+                    height and width of bubble
+                    *//*
+                    LinearLayout.LayoutParams layoutParamsIV = new LinearLayout.LayoutParams(10, 10);
+                    layoutParamsIV.setMargins(5, 10, 5, 10);
+                    imageView.setLayoutParams(layoutParamsIV);
+                    if (i == 0) {
+                        imageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_solid, null));
+                    } else {
+                        imageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_holo, null));
+                    }
+                    alBubbleViews.add(imageView);
+                    llBubbleParent.addView(imageView);
+                }*/
+                break;
+        }
     }
 }

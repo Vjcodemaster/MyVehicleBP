@@ -31,6 +31,12 @@ public class DataBaseHelper {
         this._sub_category = _sub_category;
     }
 
+    public DataBaseHelper(String _main_category, String _sub_category, String _image_path){
+        this._main_category = _main_category;
+        this._sub_category = _sub_category;
+        this._image_path = _image_path;
+    }
+
     public DataBaseHelper(String _main_category, String _sub_category, String _image_path, String _individual_dent_count,
                           String _individual_time, String _individual_cost, String _individual_length,
                           String _individual_width, String _individual_depth, int _total_dent_count, String _total_time,

@@ -18,10 +18,23 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone" />
-        <!--<com.google.android.material.appbar.AppBarLayout
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            android:layout_height="0dp"
+            android:layout_margin="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight=".07"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            card_view:cardBackgroundColor="@android:color/white"
+            card_view:cardCornerRadius="8dp"
+            card_view:cardElevation="5dp">
+            <!--<com.google.android.material.appbar.AppBarLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
@@ -29,19 +42,6 @@
                 android:layout_height="match_parent"
                 app:contentScrim="?attr/colorPrimary"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">-->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="5dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight=".06"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            card_view:cardBackgroundColor="@android:color/white"
-            card_view:cardCornerRadius="8dp"
-            card_view:cardElevation="5dp">
-
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -55,14 +55,14 @@
                     app:layout_behavior="@string/appbar_scrolling_view_behavior"
                     tools:targetApi="lollipop" />
 
-                <ImageView
-                    android:id="@+id/products_rv_image_view"
+                <!--<ImageView
+                    android:id="@+id/iv_dent_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@android:color/white"
                     android:contentDescription="@string/app_name"
                     android:scaleType="fitXY"
-                    android:src="@drawable/demo_car" />
+                    android:src="@drawable/demo_car" />-->
 
                 <TextView
                     android:layout_width="match_parent"
@@ -71,10 +71,11 @@
                     android:background="@android:color/black" />
 
                 <TextView
+                    android:id="@+id/tv_photo_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="Photos"
+                    android:text="No Photos"
                     android:textColor="@android:color/white"
                     android:textStyle="bold" />
 
@@ -101,8 +102,8 @@
 
                     <ImageView
                         android:id="@+id/iv_gallery"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
                         android:layout_marginEnd="5dp"
                         android:layout_marginBottom="5dp"
                         android:src="@drawable/gallery"
@@ -110,8 +111,8 @@
 
                     <ImageView
                         android:id="@+id/iv_camera"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
                         android:layout_marginEnd="5dp"
                         android:layout_marginBottom="5dp"
                         android:src="@drawable/camera"
@@ -125,6 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center"
                     android:orientation="horizontal"
+                    android:layout_marginBottom="5dp"
                     android:transitionName="@string/ll_bubble_transition"
                     tools:targetApi="lollipop" />
                 <!--<RatingBar
@@ -141,7 +143,15 @@
                     android:stepSize="0.1"/>-->
             </FrameLayout>
 
+                <!--<androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    app:layout_collapseMode="pin"/>
 
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+            </com.google.android.material.appbar.AppBarLayout>-->
             <!-- <com.google.android.material.appbar.MaterialToolbar
                  android:id="@+id/toolbar"
                  android:layout_width="match_parent"

@@ -20,13 +20,15 @@ public class SubMenuRVAdapter extends RecyclerView.Adapter<SubMenuRVAdapter.Menu
     private Context context;
     private RecyclerView recyclerView;
     private ArrayList<String> alSubMenuNames;
+    private String sMainCategory;
     //TextView tvPrevious;
     //private FragmentManager fragmentManager;
     //private String sMainMenuName;
 
-    public SubMenuRVAdapter(Context context, RecyclerView recyclerView, ArrayList<String> alSubMenuNames) {
+    public SubMenuRVAdapter(Context context, RecyclerView recyclerView, String sMainCategory, ArrayList<String> alSubMenuNames) {
         this.context = context;
         this.recyclerView = recyclerView;
+        this.sMainCategory = sMainCategory;
         this.alSubMenuNames = alSubMenuNames;
         //this.fragmentManager = fragmentManager;
     }
@@ -42,7 +44,7 @@ public class SubMenuRVAdapter extends RecyclerView.Adapter<SubMenuRVAdapter.Menu
     @Override
     public void onBindViewHolder(@NonNull final MenuItemTabHolder holder, final int position) {
 
-        int color= ((int)(Math.random()*16777215)) | (0xFF << 24);
+        int color = ((int) (Math.random() * 16777215)) | (0xFF << 24);
 
         holder.cvDynamicParentBG.setCardBackgroundColor(color);
 
@@ -51,7 +53,7 @@ public class SubMenuRVAdapter extends RecyclerView.Adapter<SubMenuRVAdapter.Menu
         holder.cvDynamicParentBG.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.onFragmentInteractionListener.onFragmentChange(StaticReferenceClass.OPEN_DENT_FRAGMENT, "", null);
+                MainActivity.onFragmentInteractionListener.onFragmentChange(StaticReferenceClass.OPEN_DENT_FRAGMENT, sMainCategory + "," + alSubMenuNames.get(position), null);
             }
         });
 
