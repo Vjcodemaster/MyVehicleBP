@@ -14,15 +14,13 @@ import androidx.viewpager.widget.PagerAdapter;
 import java.io.File;
 import java.util.ArrayList;
 
-import static app_utility.StaticReferenceClass.TRANSITION_FRAGMENT;
-
-public class DentInfoImagePagerAdapter extends PagerAdapter {
+public class TransitionImagePagerAdapter extends PagerAdapter {
 
     private Context context;
     private LayoutInflater mLayoutInflater;
     private ArrayList<String> alImagePath;
 
-    DentInfoImagePagerAdapter(Context context, ArrayList<String> alImagePath){
+    TransitionImagePagerAdapter(Context context, ArrayList<String> alImagePath){
         this.context = context;
         this.alImagePath = alImagePath;
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -52,12 +50,6 @@ public class DentInfoImagePagerAdapter extends PagerAdapter {
         View itemView = mLayoutInflater.inflate(R.layout.dent_image_pager_item, container, false);
         ImageView ivDentImage = itemView.findViewById(R.id.iv_dent_image);
 
-        ivDentImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DentInfoFragment.onAdapterInterface.onAdapterCall(TRANSITION_FRAGMENT);
-            }
-        });
         ivDentImage.setImageURI(Uri.fromFile(new File(alImagePath.get(position))));
         container.addView(itemView);
         return itemView;

@@ -7,6 +7,8 @@ public class StaticReferenceClass {
     public static int IMAGE_SAVED = 2;
     public static int SHOW_FAB = 3;
     public static int HIDE_FAB = 4;
+    public static int MENU_ITEM_SAVE = 5;
+    public static int TRANSITION_FRAGMENT = 6;
 
     public static int INVISIBLE = 0;
     public static int VISIBLE = 1;

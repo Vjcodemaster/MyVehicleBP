@@ -110,7 +110,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
         }
         length++;
         notifyItemInserted(length);
-        recyclerView.scrollToPosition(length);
+        recyclerView.smoothScrollToPosition(length);
     }
 
     @Override

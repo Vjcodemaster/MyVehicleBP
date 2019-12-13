@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
@@ -20,12 +21,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.TransitionInflater;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,6 +43,7 @@ import app_utility.ZoomOutPageTransformer;
 import ja.burhanrashid52.photoeditor.PhotoEditor;
 import ja.burhanrashid52.photoeditor.PhotoEditorView;
 
+import static app_utility.StaticReferenceClass.MENU_ITEM_SAVE;
 import static app_utility.StaticReferenceClass.REQUEST_GALLERY_CODE;
 
 
@@ -59,7 +64,8 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
     private String sSubCategory;
 
     private ImageView ivGallery, ivCamera, ivDentView;
-    private TextView tvAddDents, tvPhotoStatus;
+    private MaterialTextView tvAddDents;
+    private TextView tvPhotoStatus;
 
     private LinearLayout llBubbleParent;
     private ImageView[] imageViews;
@@ -119,12 +125,9 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
         initViews(view);
         onClickListener();
 
-        /*ArrayList<String> alLength = new ArrayList<>();
-        alLength.add("mm");
-        alLength.add("cm");
-        alLength.add("in");*/
         imageViewRVAdapter = new DentsRVAdapter(getContext(), recyclerViewDentsInfo, 1);
         recyclerViewDentsInfo.setAdapter(imageViewRVAdapter);
+
         return view;
     }
 
@@ -138,7 +141,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
         recyclerViewDentsInfo = view.findViewById(R.id.rv_dents_info);
 
         mViewPagerSlideShow = view.findViewById(R.id.viewpager_slideshow);
-        mViewPagerSlideShow.setOffscreenPageLimit(2 - 1);
+        mViewPagerSlideShow.setOffscreenPageLimit(alImagePath.size() - 1);
 
         fabDelete = view.findViewById(R.id.fab_delete);
         fabDelete.hide();
@@ -252,7 +255,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
         final File root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
                 + getActivity().getResources().getString(R.string.folder_name));
         root.mkdirs();
-        final String sFileName = "IMG" + System.currentTimeMillis() + ".png";
+        final String sFileName = "IMG" + System.currentTimeMillis() + ".jpg";
         File sdImageMainDirectory = new File(root, sFileName);
         Uri outputFileUri = Uri.fromFile(sdImageMainDirectory);
 
@@ -280,9 +283,32 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
 
         // Add the camera options.
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[]{}));
-        MainActivity.onFragmentInteractionListener.onFragmentChange(StaticReferenceClass.SET_URI, "", outputFileUri);
+        MainActivity.onFragmentInteractionListener.onFragmentChange(StaticReferenceClass.SET_URI, "", false, outputFileUri);
         getActivity().startActivityForResult(chooserIntent, REQUEST_GALLERY_CODE);
         //onImageUtilsListener.onBitmapCompressed("START_ACTIVITY_FOR_RESULT",1,null, chooserIntent, outputFileUri);
+    }
+
+    private void addNewBubble(){
+        ImageView imageView;
+        imageView = new ImageView(getContext());
+
+        /*height and width of bubble*/
+        LinearLayout.LayoutParams layoutParamsIV = new LinearLayout.LayoutParams(10, 10);
+        layoutParamsIV.setMargins(5, 10, 5, 10);
+        imageView.setLayoutParams(layoutParamsIV);
+        if (alBubbleViews.size()==0) {
+            imageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_solid, null));
+        } else {
+            imageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_holo, null));
+        }
+        alBubbleViews.add(imageView);
+        llBubbleParent.addView(imageView);
+    }
+
+    private void removeBubble(){
+        ImageView imageView = alBubbleViews.get(alBubbleViews.size()-1);
+        llBubbleParent.removeView(imageView);
+        alBubbleViews.remove(imageView);
     }
 
     @Override
@@ -312,6 +338,42 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
             case HIDE_FAB:
                 fabDelete.hide();
                 break;
+            case TRANSITION_FRAGMENT:
+                FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                Fragment transitionFragment = TransitionFragment.newInstance("", "", alImagePath);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    setSharedElementReturnTransition(TransitionInflater.from(
+                            getActivity()).inflateTransition(R.transition.change_image_trans));
+                    setExitTransition(TransitionInflater.from(
+                            getActivity()).inflateTransition(android.R.transition.fade));
+
+                    transitionFragment.setSharedElementEnterTransition(TransitionInflater.from(
+                            getActivity()).inflateTransition(R.transition.change_image_trans));
+                    transitionFragment.setEnterTransition(TransitionInflater.from(
+                            getActivity()).inflateTransition(android.R.transition.fade));
+                }
+                ft.replace(R.id.fl_container, transitionFragment);
+                ft.addToBackStack(null);
+                ft.addSharedElement(mViewPagerSlideShow, getString(R.string.viewpager_transition));
+                ft.addSharedElement(llBubbleParent, getString(R.string.ll_bubble_transition));
+                ft.commit();
+                //transitionFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_image_transform));
+               /* transitionFragment.setSharedElementEnterTransition(new DetailsTransition());
+                transitionFragment.setEnterTransition(new Fade());
+                transitionFragment.setExitTransition(new Fade());
+                transitionFragment.setSharedElementReturnTransition(new DetailsTransition());*/
+
+                /*transitionFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_image_transform));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    transitionFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.explode));
+                }*/
+                //transitionFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_image_transform));
+               /* ft.addSharedElement(mViewPagerSlideShow, ViewCompat.getTransitionName(mViewPagerSlideShow));
+                ft.addSharedElement(llBubbleParent, ViewCompat.getTransitionName(llBubbleParent));
+                ft.addToBackStack(null);
+                ft.replace(R.id.fl_container, transitionFragment);
+                ft.commit();*/
+                break;
         }
     }
 
@@ -326,7 +388,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
     }
 
     @Override
-    public void onFragmentChange(int nCase, String sCase, Uri uri) {
+    public void onFragmentChange(int nCase, String sCase, boolean isVisible, Uri uri) {
 
     }
 
@@ -337,47 +399,13 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
             case SET_URI:
                 alImagePath.add(uri.getPath());
                 DentInfoImagePagerAdapter dentInfoImagePagerAdapter = new DentInfoImagePagerAdapter(getContext(), alImagePath);
+                mViewPagerSlideShow.setOffscreenPageLimit(alImagePath.size() - 1);
                 mViewPagerSlideShow.setAdapter(dentInfoImagePagerAdapter);
                 if (alImagePath.size() > 0) {
                     tvPhotoStatus.setVisibility(View.GONE);
                 }
-                ImageView imageView;
-                imageView = new ImageView(getContext());
-                    /*
-                    height and width of bubble
-                    */
-                LinearLayout.LayoutParams layoutParamsIV = new LinearLayout.LayoutParams(10, 10);
-                layoutParamsIV.setMargins(5, 10, 5, 10);
-                imageView.setLayoutParams(layoutParamsIV);
-                if (alBubbleViews.size()==0) {
-                    imageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_solid, null));
-                } else {
-                    imageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_holo, null));
-                }
-                alBubbleViews.add(imageView);
-                llBubbleParent.addView(imageView);
-                //imageViews = new ImageView[alImagePath.size()];
-
-                //DatabaseHandler dbHandler = new DatabaseHandler(getContext());
-                //dbHandler.addImagePathToServiceTable(new DataBaseHelper(sMainCategory, sSubCategory, uri.getPath()));
-                //ivDentView.setImageURI(uri);
-
-                /*for (int i = 0; i < alImagePath.size(); i++) {
-                    imageView = new ImageView(getContext());
-                    *//*
-                    height and width of bubble
-                    *//*
-                    LinearLayout.LayoutParams layoutParamsIV = new LinearLayout.LayoutParams(10, 10);
-                    layoutParamsIV.setMargins(5, 10, 5, 10);
-                    imageView.setLayoutParams(layoutParamsIV);
-                    if (i == 0) {
-                        imageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_solid, null));
-                    } else {
-                        imageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_holo, null));
-                    }
-                    alBubbleViews.add(imageView);
-                    llBubbleParent.addView(imageView);
-                }*/
+                addNewBubble();
+                MainActivity.onFragmentInteractionListener.onFragmentChange(MENU_ITEM_SAVE, "", true, null);
                 break;
         }
     }

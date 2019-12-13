@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         }
     }
 
-    private void initViews(){
+    private void initViews() {
         toolbar = findViewById(R.id.toolbar_layout);
         setSupportActionBar(toolbar);
     }
@@ -226,13 +226,13 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
 
-        if(getSupportFragmentManager().getBackStackEntryCount()>1) {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fl_container);
             //currentFragment.getClass().getName();
             //String fragmentTag = getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
-            if(currentFragment.getClass().getName().equals(DentInfoFragment.class.getName()))
+            if (currentFragment.getClass().getName().equals(DentInfoFragment.class.getName()))
                 menuItemHandler(menu.findItem(R.id.action_save), INVISIBLE);
         } else
             toolbarBackArrowVisibility(INVISIBLE);
@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     }*/
 
     @Override
-    public void onFragmentChange(int nCase, String sCase, Uri uri) {
+    public void onFragmentChange(int nCase, String sCase, boolean isVisible, Uri uri) {
         Constants constants = Constants.values()[nCase];
         switch (constants) {
             case OPEN_DENT_FRAGMENT:
@@ -286,8 +286,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 ft.add(R.id.fl_container, subMenuFragment);
                 ft.addToBackStack(null);
                 ft.commit();
-                menuItemHandler(menu.findItem(R.id.action_save), VISIBLE);
-                toolbarBackArrowVisibility(VISIBLE);
+                //menuItemHandler(menu.findItem(R.id.action_save), VISIBLE);
+                //toolbarBackArrowVisibility(VISIBLE);
                 break;
             case SET_URI:
                 uriImage = uri;
@@ -298,6 +298,12 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 //in.putExtra(CURRENT_SUB_CATEGORY, sCurrentSubCategory);
                 in.setData(uri);
                 startActivity(in);
+                break;
+            case MENU_ITEM_SAVE:
+                if (isVisible)
+                    menuItemHandler(menu.findItem(R.id.action_save), VISIBLE);
+                else
+                    menuItemHandler(menu.findItem(R.id.action_save), INVISIBLE);
                 break;
         }
     }

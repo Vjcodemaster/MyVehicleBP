@@ -53,7 +53,7 @@ public class SubMenuRVAdapter extends RecyclerView.Adapter<SubMenuRVAdapter.Menu
         holder.cvDynamicParentBG.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.onFragmentInteractionListener.onFragmentChange(StaticReferenceClass.OPEN_DENT_FRAGMENT, sMainCategory + "," + alSubMenuNames.get(position), null);
+                MainActivity.onFragmentInteractionListener.onFragmentChange(StaticReferenceClass.OPEN_DENT_FRAGMENT, sMainCategory + "," + alSubMenuNames.get(position), false,null);
             }
         });
 

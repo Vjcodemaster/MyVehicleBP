@@ -87,7 +87,7 @@ public class MyVehicleAsyncTask extends AsyncTask<String, String, String> {
     protected void onPostExecute(String result) {
         switch (nCase){
             case 1:
-                MainActivity.onFragmentInteractionListener.onFragmentChange(IMAGE_SAVED, "", Uri.fromFile(sdImageMainDirectory));
+                MainActivity.onFragmentInteractionListener.onFragmentChange(IMAGE_SAVED, "", false, Uri.fromFile(sdImageMainDirectory));
                 break;
         }
     }
