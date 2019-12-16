@@ -26,6 +26,15 @@ public class DataBaseHelper {
 
     }
 
+    public DataBaseHelper(int nCase, String sMultiInput){
+        Constants constants = Constants.values()[nCase];
+        switch (constants){
+            case UPDATE_IMAGE_PATH:
+                set_image_path(sMultiInput);
+                break;
+        }
+    }
+
     public DataBaseHelper(String _main_category, String _sub_category){
         this._main_category = _main_category;
         this._sub_category = _sub_category;

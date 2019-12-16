@@ -6,8 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
+    android:clickable="true"
+    android:focusable="true"
     tools:context=".DentInfoFragment">
-
 
 
     <LinearLayout
@@ -122,8 +123,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|center"
-                    android:orientation="horizontal"
                     android:layout_marginBottom="5dp"
+                    android:orientation="horizontal"
                     android:transitionName="@string/ll_bubble_transition"
                     tools:targetApi="lollipop" />
                 <!--<RatingBar
@@ -140,15 +141,15 @@
                     android:stepSize="0.1"/>-->
             </FrameLayout>
 
-                <!--<androidx.appcompat.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    app:layout_collapseMode="pin"/>
+            <!--<androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                app:layout_collapseMode="pin"/>
 
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-            </com.google.android.material.appbar.AppBarLayout>-->
+        </com.google.android.material.appbar.AppBarLayout>-->
             <!-- <com.google.android.material.appbar.MaterialToolbar
                  android:id="@+id/toolbar"
                  android:layout_width="match_parent"
@@ -330,10 +331,10 @@
                     android:layout_centerInParent="true"
                     android:layout_marginEnd="5dp"
                     android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?android:attr/selectableItemBackground"
                     android:drawableStart="@drawable/circle_plus"
                     android:drawablePadding="5dp"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
                     android:text="@string/add_dent"
                     android:textAppearance="@android:style/TextAppearance.Small"

@@ -1,8 +1,8 @@
 package com.autochip.myvehicle;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,17 +10,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
-import androidx.transition.TransitionInflater;
 import androidx.viewpager.widget.ViewPager;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
+import app_utility.Constants;
+import app_utility.DataBaseHelper;
+import app_utility.DatabaseHandler;
 import app_utility.OnFragmentInteractionListener;
 import app_utility.ZoomOutPageTransformer;
+
+import static app_utility.StaticReferenceClass.UPDATE_IMAGE_PATH;
 
 
 /**
@@ -31,7 +34,7 @@ import app_utility.ZoomOutPageTransformer;
  * Use the {@link TransitionFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TransitionFragment extends Fragment {
+public class TransitionFragment extends Fragment implements OnFragmentInteractionListener{
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -39,8 +42,9 @@ public class TransitionFragment extends Fragment {
 
     private String mParam1;
     private String mParam2;
+    private int nDBID;
 
-    private OnFragmentInteractionListener mListener;
+    public static OnFragmentInteractionListener mListener;
 
     private ViewPager viewPagerTransition;
     private LinearLayout llBubbleParentTransition;
@@ -49,6 +53,7 @@ public class TransitionFragment extends Fragment {
     private ArrayList<String> alImagePath;
     private ZoomOutPageTransformer zoomOutPageTransformer;
     private ArrayList<ImageView> alBubbleViews = new ArrayList<>();
+    private DatabaseHandler dbhandler;
 
     public TransitionFragment() {
         // Required empty public constructor
@@ -58,8 +63,8 @@ public class TransitionFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param param1      Parameter 1.
+     * @param param2      Parameter 2.
      * @param alImagePath Parameter 3.
      * @return A new instance of fragment TransitionFragment.
      */
@@ -78,9 +83,18 @@ public class TransitionFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
+
+            //getting db ID
+            if (mParam1 != null)
+                nDBID = Integer.valueOf(mParam1);
+            else
+                nDBID = -1;
+
             mParam2 = getArguments().getString(ARG_PARAM2);
             alImagePath = new ArrayList<>(Objects.requireNonNull(getArguments().getStringArrayList(IMAGE_PATH)));
         }
+        mListener = this;
+        dbhandler = new DatabaseHandler(getContext());
         zoomOutPageTransformer = new ZoomOutPageTransformer();
         //setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(R.transition.change_image_transform));
     }
@@ -89,7 +103,7 @@ public class TransitionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =inflater.inflate(R.layout.fragment_transition, container, false);
+        View view = inflater.inflate(R.layout.fragment_transition, container, false);
 
         initViews(view);
         initListeners();
@@ -105,7 +119,7 @@ public class TransitionFragment extends Fragment {
         updateViews();
     }*/
 
-    private void initViews(View view){
+    private void initViews(View view) {
         viewPagerTransition = view.findViewById(R.id.vp_image_transition);
         viewPagerTransition.setOffscreenPageLimit(alImagePath.size() - 1);
 
@@ -114,7 +128,7 @@ public class TransitionFragment extends Fragment {
         ivRight = view.findViewById(R.id.iv_right);
     }
 
-    private void initListeners(){
+    private void initListeners() {
         viewPagerTransition.setPageTransformer(false, new ViewPager.PageTransformer() {
             @Override
             public void transformPage(@NonNull View page, float position) {
@@ -160,16 +174,16 @@ public class TransitionFragment extends Fragment {
         });
     }
 
-    private void updateViews(){
+    private void updateViews() {
         TransitionImagePagerAdapter dentInfoImagePagerAdapter = new TransitionImagePagerAdapter(getContext(), alImagePath);
         viewPagerTransition.setAdapter(dentInfoImagePagerAdapter);
 
-        for (int i=0; i<alImagePath.size(); i++){
+        for (int i = 0; i < alImagePath.size(); i++) {
             addNewBubble();
         }
     }
 
-    private void addNewBubble(){
+    private void addNewBubble() {
         ImageView imageView;
         imageView = new ImageView(getContext());
 
@@ -177,7 +191,7 @@ public class TransitionFragment extends Fragment {
         LinearLayout.LayoutParams layoutParamsIV = new LinearLayout.LayoutParams(10, 10);
         layoutParamsIV.setMargins(5, 10, 5, 10);
         imageView.setLayoutParams(layoutParamsIV);
-        if (alBubbleViews.size()==0) {
+        if (alBubbleViews.size() == 0) {
             imageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_solid, null));
         } else {
             imageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_holo, null));
@@ -186,8 +200,8 @@ public class TransitionFragment extends Fragment {
         llBubbleParentTransition.addView(imageView);
     }
 
-    private void removeBubble(){
-        ImageView imageView = alBubbleViews.get(alBubbleViews.size()-1);
+    private void removeBubble() {
+        ImageView imageView = alBubbleViews.get(alBubbleViews.size() - 1);
         llBubbleParentTransition.removeView(imageView);
         alBubbleViews.remove(imageView);
     }
@@ -209,4 +223,25 @@ public class TransitionFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onFragmentChange(int nCase, String sCase, boolean isVisible, Uri uri) {
+
+    }
+
+    @Override
+    public void onActivityToFragment(int nCase, String sCase, Uri uri) {
+        Constants constants = Constants.values()[nCase];
+        switch (constants) {
+            case DELETE_IMAGE:
+                int pos = viewPagerTransition.getCurrentItem();
+                //TransitionImagePagerAdapter.onAdapterInterface.onDelete(pos);
+                alImagePath.remove(pos);
+                removeBubble();
+                TransitionImagePagerAdapter dentInfoImagePagerAdapter = new TransitionImagePagerAdapter(getContext(), alImagePath);
+                viewPagerTransition.setAdapter(dentInfoImagePagerAdapter);
+                DentInfoFragment.onAdapterInterface.onDelete(pos);
+                //dbhandler.updateImagePath(new DataBaseHelper(UPDATE_IMAGE_PATH, android.text.TextUtils.join(",", alImagePath)), nDBID);
+                break;
+        }
+    }
 }

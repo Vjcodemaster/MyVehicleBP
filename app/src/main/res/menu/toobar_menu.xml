@@ -10,11 +10,19 @@
         android:id="@+id/action_save"
         android:enabled="true"
         android:icon="@drawable/check"
-        android:orderInCategory="2"
+        android:orderInCategory="1"
         android:title=""
         android:visible="false"
         app:showAsAction="ifRoom"/>
 
+    <item
+        android:id="@+id/action_delete"
+        android:enabled="true"
+        android:icon="@drawable/delete_forever"
+        android:orderInCategory="2"
+        android:title=""
+        android:visible="false"
+        app:showAsAction="ifRoom"/>
     <!--<item
         android:id="@+id/action_sort"
         android:enabled="true"

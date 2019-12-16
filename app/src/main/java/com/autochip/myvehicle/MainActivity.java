@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,8 +30,7 @@ import app_utility.PermissionHandler;
 import photo.editor.EditImageActivity;
 
 import static app_utility.PermissionHandler.APP_PERMISSION;
-import static app_utility.StaticReferenceClass.CURRENT_MAIN_CATEGORY;
-import static app_utility.StaticReferenceClass.CURRENT_SUB_CATEGORY;
+import static app_utility.StaticReferenceClass.DELETE_IMAGE;
 import static app_utility.StaticReferenceClass.INVISIBLE;
 import static app_utility.StaticReferenceClass.VISIBLE;
 
@@ -119,6 +117,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             //handles open and close of home button of actionbar/toolbar
             case R.id.action_save:
                 //mDrawerLayout.openDrawer(GravityCompat.START);
+                break;
+            case R.id.action_delete:
+                TransitionFragment.mListener.onActivityToFragment(DELETE_IMAGE, "", null);
                 break;
             case android.R.id.home:
                 onBackPressed();
@@ -234,6 +235,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             //String fragmentTag = getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
             if (currentFragment.getClass().getName().equals(DentInfoFragment.class.getName()))
                 menuItemHandler(menu.findItem(R.id.action_save), INVISIBLE);
+            else if(currentFragment.getClass().getName().equals(TransitionFragment.class.getName()))
+                menuItemHandler(menu.findItem(R.id.action_delete), INVISIBLE);
         } else
             toolbarBackArrowVisibility(INVISIBLE);
         super.onBackPressed();
@@ -304,6 +307,12 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                     menuItemHandler(menu.findItem(R.id.action_save), VISIBLE);
                 else
                     menuItemHandler(menu.findItem(R.id.action_save), INVISIBLE);
+                break;
+            case MENU_ITEM_DELETE:
+                if (isVisible)
+                    menuItemHandler(menu.findItem(R.id.action_delete), VISIBLE);
+                else
+                    menuItemHandler(menu.findItem(R.id.action_delete), INVISIBLE);
                 break;
         }
     }

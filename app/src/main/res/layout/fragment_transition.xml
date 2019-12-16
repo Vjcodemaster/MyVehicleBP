@@ -18,7 +18,6 @@
         android:clickable="true"
         android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
-        app:cardBackgroundColor="#D5FFFFFF"
         card_view:cardElevation="2dp">
 
         <FrameLayout

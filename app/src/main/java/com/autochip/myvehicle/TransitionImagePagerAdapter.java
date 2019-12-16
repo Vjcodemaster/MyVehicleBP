@@ -14,15 +14,19 @@ import androidx.viewpager.widget.PagerAdapter;
 import java.io.File;
 import java.util.ArrayList;
 
-public class TransitionImagePagerAdapter extends PagerAdapter {
+import app_utility.OnAdapterInterface;
+
+public class TransitionImagePagerAdapter extends PagerAdapter  {
 
     private Context context;
     private LayoutInflater mLayoutInflater;
     private ArrayList<String> alImagePath;
+    //public static OnAdapterInterface onAdapterInterface;
 
     TransitionImagePagerAdapter(Context context, ArrayList<String> alImagePath){
         this.context = context;
         this.alImagePath = alImagePath;
+        //onAdapterInterface = this;
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -59,4 +63,20 @@ public class TransitionImagePagerAdapter extends PagerAdapter {
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((LinearLayout) object);
     }
+
+    /*@Override
+    public void onAdapterCall(int nCall) {
+
+    }
+
+    @Override
+    public void onAdd() {
+
+    }
+
+    @Override
+    public void onDelete(int pos) {
+        alImagePath.remove(pos);
+        notifyDataSetChanged();
+    }*/
 }

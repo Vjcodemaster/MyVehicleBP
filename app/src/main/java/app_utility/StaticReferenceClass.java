@@ -9,6 +9,10 @@ public class StaticReferenceClass {
     public static int HIDE_FAB = 4;
     public static int MENU_ITEM_SAVE = 5;
     public static int TRANSITION_FRAGMENT = 6;
+    public static int MENU_ITEM_DELETE = 7;
+    public static int DELETE_IMAGE = 8;
+    public static int UPDATE_IMAGE_PATH = 9;
+    public static int ADD_ALL_DATA = 10;
 
     public static int INVISIBLE = 0;
     public static int VISIBLE = 1;

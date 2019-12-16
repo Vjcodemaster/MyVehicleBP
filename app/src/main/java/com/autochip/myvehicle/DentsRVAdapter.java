@@ -1,13 +1,14 @@
 package com.autochip.myvehicle;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,9 +21,11 @@ import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
+import app_utility.Constants;
+import app_utility.DentsRVData;
 import app_utility.OnAdapterInterface;
-import app_utility.StaticReferenceClass;
 
 import static app_utility.StaticReferenceClass.HIDE_FAB;
 import static app_utility.StaticReferenceClass.SHOW_FAB;
@@ -34,8 +37,10 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
     private ArrayList<String> alSubMenuNames;
     ArrayAdapter<String> adapterMake;
     int length;
+    int count;
     static boolean isInDeleteMode = false;
-    private HashMap<Integer, HashMap<String, String>> hmDents = new HashMap<>();
+    private LinkedHashMap<Integer, DentsRVData> lhmDents = new LinkedHashMap<>();
+    ArrayList<DentsRVData> alDentsData;
 
     private static ArrayList<Integer> nALSelectedItemIndex = new ArrayList<>();
 
@@ -45,13 +50,12 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
     //private FragmentManager fragmentManager;
     //private String sMainMenuName;
 
-    public DentsRVAdapter(Context context, RecyclerView recyclerView, int length) {
+    public DentsRVAdapter(Context context, RecyclerView recyclerView, ArrayList<DentsRVData> alDentsData, int length) {
         this.context = context;
         this.recyclerView = recyclerView;
+        this.alDentsData = alDentsData;
         this.length = length;
         onAdapterInterface = this;
-        //this.alSubMenuNames = alSubMenuNames;
-        //this.fragmentManager = fragmentManager;
     }
 
     @NonNull
@@ -65,13 +69,47 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
     @Override
     public void onBindViewHolder(@NonNull final MenuItemTabHolder holder, final int position) {
         this.holder = holder;
+        count++;
+
+        if (alDentsData.size() > position) {
+            holder.etLength.getEditText().setText(alDentsData.get(position).getLength());
+            holder.etWidth.getEditText().setText(alDentsData.get(position).getWidth());
+            holder.etDepth.getEditText().setText(alDentsData.get(position).getDepth());
+            holder.etTime.getEditText().setText(alDentsData.get(position).getTimeInHours());
+            holder.etCost.getEditText().setText(alDentsData.get(position).getCost());
+            lhmDents.put(count, alDentsData.get(position));
+            //hmDents.put(count, alDentsData.get(position));
+        }
+        holder.mcvParentID.setId(count);
+
+        holder.etLength.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        //count++;
+        //holder.mtvParentID.setId(count);
+        //Toast.makeText(context, count+"", Toast.LENGTH_SHORT).show();
         //holder.spinnerLength.setSelection(0);
-        holder.mtvTotalDents.setText(String.valueOf(position+1));
+        holder.mtvDentCount.setText(String.valueOf(position + 1));
         //hmDents.put()
     }
 
     @Override
     public int getItemCount() {
+        if (length == 0)
+            length = 1;
         return length; //alBeaconInfo.size()
     }
 
@@ -82,61 +120,147 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
 
     @Override
     public void onAdapterCall(int nCall) {
-
+        Constants constants = Constants.values()[nCall];
+        switch (constants) {
+            case ADD_ALL_DATA:
+                addAllDataToList();
+                break;
+        }
     }
 
     @Override
-    public void onAdd() {
+    public void onAdd(LinkedHashMap<Integer, DentsRVData> lhmDents) {
         //recyclerView.getAdapter().getItemCount();
-        if(holder.etLength.getEditText().getText().toString().trim().length()==0){
+        String sLength = holder.etLength.getEditText().getText().toString().trim();
+        if (sLength.length() == 0) {
             Toast.makeText(context, "Please enter Length", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(holder.etWidth.getEditText().getText().toString().trim().length()==0){
+        String sWidth = holder.etWidth.getEditText().getText().toString().trim();
+        if (sWidth.length() == 0) {
             Toast.makeText(context, "Please enter Width", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(holder.etDepth.getEditText().getText().toString().trim().length()==0){
+        String sDepth = holder.etDepth.getEditText().getText().toString().trim();
+        if (sDepth.length() == 0) {
             Toast.makeText(context, "Please enter Depth", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(holder.etTime.getEditText().getText().toString().trim().length()==0){
+        String sTime = holder.etTime.getEditText().getText().toString().trim();
+        if (sTime.length() == 0) {
             Toast.makeText(context, "Please enter Time", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(holder.etCost.getEditText().getText().toString().trim().length()==0){
+        String sCost = holder.etCost.getEditText().getText().toString().trim();
+        if (sCost.length() == 0) {
             Toast.makeText(context, "Please enter Cost", Toast.LENGTH_SHORT).show();
             return;
         }
         length++;
         notifyItemInserted(length);
         recyclerView.smoothScrollToPosition(length);
+        //this.alDentsData.add(dentsRVData);
+        //DentsRVData dentsRVData = new DentsRVData(sLength, sWidth, sDepth, sTime, sCost);
+        //hmDents.put(count, dentsRVData);
+        //DentInfoFragment.onAdapterInterface.onAdd(alDentsData);
+        //addAllDataToList();
+    }
+
+   /* private void addLastItem(){
+        View itemView = Objects.requireNonNull(recyclerView.findViewHolderForAdapterPosition(recyclerView.getChildCount())).itemView;
+        TextInputLayout et = itemView.findViewById(R.id.et_length);
+        String sLength = et.getEditText().getText().toString().trim();
+
+        et = itemView.findViewById(R.id.et_width);
+        String sWidth = et.getEditText().getText().toString().trim();
+
+        et = itemView.findViewById(R.id.et_depth);
+        String sDepth = et.getEditText().getText().toString().trim();
+
+        et = itemView.findViewById(R.id.et_time);
+        String sTime = et.getEditText().getText().toString().trim();
+
+        et = itemView.findViewById(R.id.et_cost);
+        String sCost = et.getEditText().getText().toString().trim();
+
+        DentsRVData dentsRVData = new DentsRVData(sLength, sWidth, sDepth, sTime, sCost);
+        alDentsData.add(dentsRVData);
+        //hmDents.put(count, dentsRVData);
+        DentInfoFragment.onAdapterInterface.onAdd(alDentsData);
+    }*/
+
+    private void addAllDataToList() {
+        for (int i = 0; i < recyclerView.getAdapter().getItemCount(); i++) {
+            View itemView = recyclerView.getChildAt(i);
+            //View itemView = Objects.requireNonNull(recyclerView.findViewHolderForAdapterPosition(i)).itemView;
+            TextInputLayout et = itemView.findViewById(R.id.et_length);
+            String sLength = et.getEditText().getText().toString().trim();
+
+            et = itemView.findViewById(R.id.et_width);
+            String sWidth = et.getEditText().getText().toString().trim();
+
+            et = itemView.findViewById(R.id.et_depth);
+            String sDepth = et.getEditText().getText().toString().trim();
+
+            et = itemView.findViewById(R.id.et_time);
+            String sTime = et.getEditText().getText().toString().trim();
+
+            et = itemView.findViewById(R.id.et_cost);
+            String sCost = et.getEditText().getText().toString().trim();
+
+            DentsRVData dentsRVData = new DentsRVData(sLength, sWidth, sDepth, sTime, sCost);
+            alDentsData.add(dentsRVData);
+            lhmDents.put(itemView.getId(), dentsRVData);
+            //hmDents.put(count, dentsRVData);
+        }
+        DentInfoFragment.onAdapterInterface.onAdd(lhmDents);
     }
 
     @Override
-    public void onDelete() {
+    public void onDelete(int pos) {
+        /*for (int i = 0; i < nALSelectedItemIndex.size(); i++) {
+            int ID = recyclerView.getChildAt(nALSelectedItemIndex.get(i)).getId();
+            hmDents.remove(ID);
+            length--;
+            notifyItemRemoved(nALSelectedItemIndex.get(i));
+        }
+        nALSelectedItemIndex.clear();*/
+        //hmDents.remove(count);
 
+        for (int i = 0; i < nALSelectedItemIndex.size(); i++) {
+            int indexToDelete = nALSelectedItemIndex.get(i);
+            if (alDentsData.size() > indexToDelete)
+                alDentsData.remove(indexToDelete);
+            int ID = recyclerView.getChildAt(nALSelectedItemIndex.get(i)).findViewById(R.id.mcv_parent_id).getId();
+            lhmDents.remove(ID);
+            length--;
+            notifyItemRemoved(nALSelectedItemIndex.get(i));
+        }
+        DentInfoFragment.onAdapterInterface.onAdd(lhmDents);
+        nALSelectedItemIndex.clear();
     }
 
     class MenuItemTabHolder extends RecyclerView.ViewHolder {
         /*Spinner spinnerLength;
         Spinner spinnerWidth;
         Spinner spinnerDepth;*/
-        MaterialTextView mtvTotalDents;
+        MaterialTextView mtvDentCount;
         TextInputLayout etLength;
         TextInputLayout etWidth;
         TextInputLayout etDepth;
         TextInputLayout etTime;
         TextInputLayout etCost;
+        MaterialCardView mcvParentID;
 
         MenuItemTabHolder(View itemView) {
             super(itemView);
-            mtvTotalDents = itemView.findViewById(R.id.tv_total_dent);
+            mtvDentCount = itemView.findViewById(R.id.tv_dent_count);
             etLength = itemView.findViewById(R.id.et_length);
             etWidth = itemView.findViewById(R.id.et_width);
             etDepth = itemView.findViewById(R.id.et_depth);
             etTime = itemView.findViewById(R.id.et_time);
             etCost = itemView.findViewById(R.id.et_cost);
+            mcvParentID = itemView.findViewById(R.id.mcv_parent_id);
             /*spinnerLength = itemView.findViewById(R.id.spinner_length);
             spinnerWidth = itemView.findViewById(R.id.spinner_width);
             spinnerDepth = itemView.findViewById(R.id.spinner_depth);
@@ -148,6 +272,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
             spinnerDepth.setAdapter(adapterMake);*/
         }
     }
+
     interface ClickListener {
         void onClick(View view, int position);
 
@@ -177,6 +302,8 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                      */
                     //adds the view of the recyclerView
                     View child = recycleView.findChildViewUnder(e.getX(), e.getY());
+                    //int index = child.getId();
+                    //int id = child.findViewById(R.id.mcv_parent_id).getId();
                     //gets the index of recyclerView
                     int index = recycleView.getChildAdapterPosition(child);
                     /*
@@ -186,7 +313,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                     else statement executes when the first if statement doesn't meet the conditions
                     which sets the background to white (which means unselected)
                      */
-                    if(isInDeleteMode) {
+                    if (isInDeleteMode) {
                         if (nALSelectedItemIndex.size() >= 1 && !nALSelectedItemIndex.contains(index)) {
                             child.setBackgroundColor(ContextCompat.getColor(context, R.color.lightGrey));
                             nALSelectedItemIndex.add(index);
@@ -216,6 +343,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                     if (child != null && clicklistener != null) {
                         clicklistener.onLongClick(child, recycleView.getChildAdapterPosition(child));
                         int index = recycleView.getChildAdapterPosition(child);
+                        //int index = child.getId();
                         /*
                         below if statement checks for one condition.
                         if hashset doesn't contain the position already the background is set to grey(which means selected) as well as added to the hashset
@@ -232,7 +360,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                                 nALSelectedItemIndex.remove((Integer) index);
                             }
                         }
-                        if(nALSelectedItemIndex.size()>0){
+                        if (nALSelectedItemIndex.size() > 0) {
                             DentInfoFragment.onAdapterInterface.onAdapterCall(SHOW_FAB);
                             isInDeleteMode = true;
                         } else {

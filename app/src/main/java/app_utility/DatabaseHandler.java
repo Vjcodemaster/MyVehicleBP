@@ -299,6 +299,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return sSubCategory;
     }
 
+    public void updateImagePath(DataBaseHelper dataBaseHelper, int KEY_ID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        //String column = "last_seen";
+        ContentValues values = new ContentValues();
+        //values.put(KEY_NAME, dataBaseHelper.getName());
+        //values.put(KEY_NUMBER, dataBaseHelper.getPhoneNumber());
+        values.put(KEY_IMAGE_PATH, dataBaseHelper.get_image_path());
+
+        // updating row
+        //return db.update(TABLE_RECENT, values, column + "last_seen", new String[] {String.valueOf(KEY_ID)});
+        db.update(TABLE_SERVICE, values, "_id" + " = " + KEY_ID, null);
+    }
+
     /*// Updating single data in all tab
     public int updateImagePath(DataBaseHelper dataBaseHelper, int KEY_ID) {
         SQLiteDatabase db = this.getWritableDatabase();
