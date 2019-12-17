@@ -29,6 +29,8 @@ import app_utility.OnAdapterInterface;
 
 import static app_utility.StaticReferenceClass.HIDE_FAB;
 import static app_utility.StaticReferenceClass.SHOW_FAB;
+import static app_utility.StaticReferenceClass.UPDATE_TOTAL_COST;
+import static app_utility.StaticReferenceClass.UPDATE_TOTAL_TIME;
 
 public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItemTabHolder> implements OnAdapterInterface {
 
@@ -41,6 +43,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
     static boolean isInDeleteMode = false;
     private LinkedHashMap<Integer, DentsRVData> lhmDents = new LinkedHashMap<>();
     ArrayList<DentsRVData> alDentsData;
+    float fBefore, fAfter;
 
     private static ArrayList<Integer> nALSelectedItemIndex = new ArrayList<>();
 
@@ -82,10 +85,15 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
         }
         holder.mcvParentID.setId(count);
 
-        holder.etLength.getEditText().addTextChangedListener(new TextWatcher() {
+
+        holder.etTime.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                String s1 = s.toString().trim();
+                if(s1.isEmpty())
+                    fBefore = 0;
+                 else
+                    fBefore = Float.valueOf(s1);
             }
 
             @Override
@@ -95,7 +103,45 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
 
             @Override
             public void afterTextChanged(Editable s) {
+                String s1 = holder.etTime.getEditText().getText().toString().trim();
+                float fData = -fBefore;
+                if (s1.length()>0) {
+                    fAfter = Float.valueOf(s1);
+                    fData = fAfter - fBefore;
+                }
+                DentInfoFragment.onAdapterInterface.onAdapterCall(UPDATE_TOTAL_TIME, true, fData);
+                //float fData = Float.valueOf(holder.etTime.getEditText().getText().toString().trim());
+                //DentInfoFragment.onAdapterInterface.onAdapterCall(UPDATE_TOTAL_TIME, false, fData);
+                //Toast.makeText(context, s.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
+        holder.etCost.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                String s1 = s.toString().trim();
+                if(s1.isEmpty())
+                    fBefore = 0;
+                else
+                    fBefore = Float.valueOf(s1);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String s1 = holder.etCost.getEditText().getText().toString().trim();
+                float fData = -fBefore;
+                if (s1.length()>0) {
+                    fAfter = Float.valueOf(s1);
+                    fData = fAfter - fBefore;
+                }
+                DentInfoFragment.onAdapterInterface.onAdapterCall(UPDATE_TOTAL_COST, true, fData);
+                //float fData = Float.valueOf(holder.etCost.getEditText().getText().toString().trim());
+                //DentInfoFragment.onAdapterInterface.onAdapterCall(UPDATE_TOTAL_COST, false, fData);
             }
         });
         //count++;
@@ -108,8 +154,6 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
 
     @Override
     public int getItemCount() {
-        if (length == 0)
-            length = 1;
         return length; //alBeaconInfo.size()
     }
 
@@ -119,7 +163,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
     }
 
     @Override
-    public void onAdapterCall(int nCall) {
+    public void onAdapterCall(int nCall, boolean isAddition, float fData) {
         Constants constants = Constants.values()[nCall];
         switch (constants) {
             case ADD_ALL_DATA:
@@ -231,13 +275,15 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
             int indexToDelete = nALSelectedItemIndex.get(i);
             if (alDentsData.size() > indexToDelete)
                 alDentsData.remove(indexToDelete);
-            int ID = recyclerView.getChildAt(nALSelectedItemIndex.get(i)).findViewById(R.id.mcv_parent_id).getId();
+            int ID = recyclerView.getChildAt(indexToDelete).getId();
             lhmDents.remove(ID);
             length--;
             notifyItemRemoved(nALSelectedItemIndex.get(i));
         }
         DentInfoFragment.onAdapterInterface.onAdd(lhmDents);
         nALSelectedItemIndex.clear();
+        if(lhmDents.size()==0)
+            count=0;
     }
 
     class MenuItemTabHolder extends RecyclerView.ViewHolder {
@@ -317,7 +363,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                         if (nALSelectedItemIndex.size() >= 1 && !nALSelectedItemIndex.contains(index)) {
                             child.setBackgroundColor(ContextCompat.getColor(context, R.color.lightGrey));
                             nALSelectedItemIndex.add(index);
-                            DentInfoFragment.onAdapterInterface.onAdapterCall(SHOW_FAB);
+                            DentInfoFragment.onAdapterInterface.onAdapterCall(SHOW_FAB, false,0);
                         } else {
                             child.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white));
                             if (nALSelectedItemIndex.size() >= 1) {
@@ -331,7 +377,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                                 //DentInfoFragment.onAdapterInterface.onAdapterCall(SHOW_FAB);
                             }
                             if (nALSelectedItemIndex.size() == 0)
-                                DentInfoFragment.onAdapterInterface.onAdapterCall(HIDE_FAB);
+                                DentInfoFragment.onAdapterInterface.onAdapterCall(HIDE_FAB, false,0);
                         }
                     }
                     return true;
@@ -361,10 +407,10 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                             }
                         }
                         if (nALSelectedItemIndex.size() > 0) {
-                            DentInfoFragment.onAdapterInterface.onAdapterCall(SHOW_FAB);
+                            DentInfoFragment.onAdapterInterface.onAdapterCall(SHOW_FAB, false,0);
                             isInDeleteMode = true;
                         } else {
-                            DentInfoFragment.onAdapterInterface.onAdapterCall(HIDE_FAB);
+                            DentInfoFragment.onAdapterInterface.onAdapterCall(HIDE_FAB, false,0);
                             isInDeleteMode = false;
                         }
                     }

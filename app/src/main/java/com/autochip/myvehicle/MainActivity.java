@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import app_utility.Constants;
 import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
+import app_utility.DentsRVData;
 import app_utility.MyVehicleAsyncTask;
 import app_utility.OnFragmentInteractionListener;
 import app_utility.PermissionHandler;
@@ -32,6 +33,7 @@ import photo.editor.EditImageActivity;
 import static app_utility.PermissionHandler.APP_PERMISSION;
 import static app_utility.StaticReferenceClass.DELETE_IMAGE;
 import static app_utility.StaticReferenceClass.INVISIBLE;
+import static app_utility.StaticReferenceClass.SAVE;
 import static app_utility.StaticReferenceClass.VISIBLE;
 
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
@@ -116,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         switch (item.getItemId()) {
             //handles open and close of home button of actionbar/toolbar
             case R.id.action_save:
+                DentInfoFragment.mListener.onActivityToFragment(SAVE, "", null);
                 //mDrawerLayout.openDrawer(GravityCompat.START);
                 break;
             case R.id.action_delete:

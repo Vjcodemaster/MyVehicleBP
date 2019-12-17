@@ -46,14 +46,14 @@ public class DataBaseHelper {
         this._image_path = _image_path;
     }
 
-    public DataBaseHelper(String _main_category, String _sub_category, String _image_path, String _individual_dent_count,
+    public DataBaseHelper(String _main_category, String _sub_category, String _image_path,
                           String _individual_time, String _individual_cost, String _individual_length,
                           String _individual_width, String _individual_depth, int _total_dent_count, String _total_time,
                           String _total_cost){
         this._main_category = _main_category;
         this._sub_category = _sub_category;
         this._image_path = _image_path;
-        this._individual_dent_count = _individual_dent_count;
+        //this._individual_dent_count = _individual_dent_count;
         this._individual_time = _individual_time;
         this._individual_cost = _individual_cost;
         this._individual_length = _individual_length;

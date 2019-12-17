@@ -13,6 +13,9 @@ public class StaticReferenceClass {
     public static int DELETE_IMAGE = 8;
     public static int UPDATE_IMAGE_PATH = 9;
     public static int ADD_ALL_DATA = 10;
+    public static int SAVE = 11;
+    public static int UPDATE_TOTAL_TIME = 12;
+    public static int UPDATE_TOTAL_COST = 13;
 
     public static int INVISIBLE = 0;
     public static int VISIBLE = 1;

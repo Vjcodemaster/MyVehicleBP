@@ -16,9 +16,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
+import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
 import app_utility.OnFragmentInteractionListener;
+import app_utility.SubMenuRVData;
+
+import static app_utility.StaticReferenceClass.ADD_ALL_DATA;
 
 
 /**
@@ -84,7 +89,7 @@ public class SubMenuFragment extends Fragment {
     }
 
 
-    private void initViews(View view){
+    private void initViews(View view) {
         recyclerViewSubMenu = view.findViewById(R.id.rv_sub_menu);
         LinearLayoutManager mLinearLayoutManager;
 
@@ -102,7 +107,54 @@ public class SubMenuFragment extends Fragment {
         recyclerViewSubMenu.setHasFixedSize(true);
         recyclerViewSubMenu.setLayoutManager(mLinearLayoutManager);
 
-        ArrayList<String> alSubMenuName = new ArrayList<>(Arrays.asList(dbHandler.getSCByMCNameMainTable(mMainCategory).split(",")));
+        /*ArrayList<DataBaseHelper> alDB = new ArrayList<>(dbHandler.getSCFromSTByMCName(mMainCategory));
+        ArrayList<String> alSubMenuName = new ArrayList<>();
+        ArrayList<String> alSubMenuImagePath = new ArrayList<>();
+        for (int i=0; i<alDB.size(); i++){
+            alSubMenuName.add(alDB.get(i).get_sub_category());
+            String sImagePath = alDB.get(i).get_image_path();
+            if(sImagePath.contains(",")){
+                sImagePath = alDB.get(i).get_image_path().split(",")[0];
+            }
+            alSubMenuImagePath.add(sImagePath);
+        }*/
+
+
+        final ArrayList<String> alSubMenuName = new ArrayList<>(Arrays.asList(dbHandler.getSCByMCNameMainTable(mMainCategory).split(",")));
+
+        /*final Runnable r = new Runnable() {
+            public void run() {
+
+            }
+        };
+        r.run();*/
+        ArrayList<DataBaseHelper> alDB = new ArrayList<>(dbHandler.getImagePathFromServiceTable(mMainCategory));
+        //ArrayList<String> alSubMenuName = new ArrayList<>();
+        //ArrayList<String> alSubMenuImagePath = new ArrayList<>();
+        /*for (int i = 0; i < alDB.size(); i++) {
+            for (int j = 0; j < alSubMenuName.size(); j++)
+                if (alDB.get(i).get_sub_category().equals(alSubMenuName.get(j))) {
+                    //alSubMenuImagePath.add(alDB.get(i).get_image_path());
+                    String sImagePath = alDB.get(i).get_image_path();
+                    if (sImagePath.contains(",")) {
+                        sImagePath = alDB.get(i).get_image_path().split(",")[0];
+                    }
+                    alSubMenuImagePath.add(sImagePath);
+                    break;
+                } else
+                    alSubMenuImagePath.add("");
+        }*/
+        //HashMap<String, String> hmSCWithImagePath = new HashMap<>();
+        HashMap<String, SubMenuRVData> hmSCWithImagePath = new HashMap<>();
+        for (int i = 0; i < alDB.size(); i++) {
+            String sSC = alDB.get(i).get_sub_category();
+            //String sIP = alDB.get(i).get_image_path();
+            SubMenuRVData subMenuRVData = new SubMenuRVData(alDB.get(i).get_image_path(), alDB.get(i).get_total_dent_count(),
+                    alDB.get(i).get_total_cost(), alDB.get(i).get_total_time());
+            //hmSCWithImagePath.put(sSC, sIP);
+            hmSCWithImagePath.put(sSC, subMenuRVData);
+        }
+
        /* alSubMenuName.add("Roof");
         alSubMenuName.add("Hood");
         alSubMenuName.add("Front door left");
@@ -110,9 +162,11 @@ public class SubMenuFragment extends Fragment {
         alSubMenuName.add("Back door left");
         alSubMenuName.add("Back door right");*/
 
-        SubMenuRVAdapter imageViewRVAdapter = new SubMenuRVAdapter(getContext(), recyclerViewSubMenu, mMainCategory,alSubMenuName);
+        //SubMenuRVAdapter imageViewRVAdapter = new SubMenuRVAdapter(getContext(), recyclerViewSubMenu, mMainCategory, alSubMenuName, alSubMenuImagePath);
+        SubMenuRVAdapter imageViewRVAdapter = new SubMenuRVAdapter(getContext(), recyclerViewSubMenu, mMainCategory, alSubMenuName, hmSCWithImagePath);
         recyclerViewSubMenu.setAdapter(imageViewRVAdapter);
     }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

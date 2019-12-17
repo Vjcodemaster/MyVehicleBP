@@ -39,7 +39,7 @@
             android:orientation="horizontal">
 
             <app_utility.CircleImageView
-                android:id="@+id/recent_rc_avatar"
+                android:id="@+id/civ_avatar"
                 android:layout_width="55dp"
                 android:layout_height="55dp"
                 android:src="@drawable/car" />
@@ -50,6 +50,14 @@
                 android:layout_marginStart="6dp"
                 android:gravity="end"
                 android:orientation="vertical">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Time : "
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="wrap_content"
@@ -76,6 +84,16 @@
                 android:orientation="vertical">
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/mtv_rv_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+                    android:textColor="@android:color/white"
+                    />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/mtv_rv_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="05"
@@ -83,6 +101,7 @@
                     android:textColor="@android:color/white" />
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/mtv_rv_cost"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2599"

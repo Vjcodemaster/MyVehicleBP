@@ -247,10 +247,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Select All Query
 
         //String selectQuery = "SELECT  * FROM " + TABLE_FOOD_BEVERAGES + " WHERE " + KEY_PRODUCT_TYPE + "= '" + sType+"'";
-        String selectQuery = "SELECT " + KEY_IMAGE_PATH + "," + KEY_INDIVIDUAL_DENT_COUNT + "," + KEY_INDIVIDUAL_TIME + ","
+        String selectQuery = "SELECT " + KEY_IMAGE_PATH + "," + KEY_INDIVIDUAL_TIME + ","
                 + KEY_INDIVIDUAL_COST + "," + KEY_INDIVIDUAL_LENGTH + "," + KEY_INDIVIDUAL_WIDTH + "," + KEY_INDIVIDUAL_DEPTH + ","
                 + KEY_TOTAL_DENT_COUNT + "," + KEY_TOTAL_TIME + "," + KEY_TOTAL_COST + " FROM " + TABLE_SERVICE + " WHERE "
-                + KEY_MAIN_CATEGORY + "= '" + sSubCategory + "'";
+                + KEY_SUB_CATEGORY + "= '" + sSubCategory + "'";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         // looping through all rows and adding to list
@@ -258,15 +258,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             do {
                 DataBaseHelper dataBaseHelper = new DataBaseHelper();
                 dataBaseHelper.set_image_path(cursor.getString(0));
-                dataBaseHelper.set_individual_dent_count(cursor.getString(1));
-                dataBaseHelper.set_individual_time(cursor.getString(2));
-                dataBaseHelper.set_individual_cost(cursor.getString(3));
-                dataBaseHelper.set_individual_length(cursor.getString(4));
-                dataBaseHelper.set_individual_width(cursor.getString(5));
-                dataBaseHelper.set_individual_depth(cursor.getString(6));
-                dataBaseHelper.set_total_dent_count(cursor.getInt(7));
-                dataBaseHelper.set_total_time(cursor.getString(8));
-                dataBaseHelper.set_total_cost(cursor.getString(9));
+                //dataBaseHelper.set_individual_dent_count(cursor.getString(1));
+                dataBaseHelper.set_individual_time(cursor.getString(1));
+                dataBaseHelper.set_individual_cost(cursor.getString(2));
+                dataBaseHelper.set_individual_length(cursor.getString(3));
+                dataBaseHelper.set_individual_width(cursor.getString(4));
+                dataBaseHelper.set_individual_depth(cursor.getString(5));
+                dataBaseHelper.set_total_dent_count(cursor.getInt(6));
+                dataBaseHelper.set_total_time(cursor.getString(7));
+                dataBaseHelper.set_total_cost(cursor.getString(8));
                 // Adding data to list
                 dataBaseHelperList.add(dataBaseHelper);
             } while (cursor.moveToNext());
@@ -290,6 +290,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             //do {
             DataBaseHelper dataBaseHelper = new DataBaseHelper();
             dataBaseHelper.set_sub_category(cursor.getString(0));
+            //dataBaseHelper.set_image_path(cursor.getString(1));
             // Adding data to list
             dataBaseHelperList.add(dataBaseHelper);
             sSubCategory = dataBaseHelperList.get(0).get_sub_category();
@@ -297,6 +298,63 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         // return recent list
         return sSubCategory;
+    }
+
+    // ST = Service Table MC = MainCategory SC = SubCategory
+    public List<DataBaseHelper> getSCFromSTByMCName(String sMainCategory) {
+        List<DataBaseHelper> dataBaseHelperList = new ArrayList<>();
+        // Select All Query
+        //String selectQuery = "SELECT  * FROM " + TABLE_FOOD_BEVERAGES + " WHERE " + KEY_PRODUCT_TYPE + "= '" + sType+"'";
+        String selectQuery = "SELECT " + KEY_SUB_CATEGORY + "," + KEY_IMAGE_PATH + " FROM " + TABLE_SERVICE + " WHERE " + KEY_MAIN_CATEGORY + "= '" + sMainCategory + "'";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        //String sSubCategory = "";
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            //do {
+            DataBaseHelper dataBaseHelper = new DataBaseHelper();
+            dataBaseHelper.set_sub_category(cursor.getString(0));
+            dataBaseHelper.set_image_path(cursor.getString(1));
+            // Adding data to list
+            dataBaseHelperList.add(dataBaseHelper);
+            //sSubCategory = dataBaseHelperList.get(0).get_sub_category();
+            //} while (cursor.moveToNext());
+        }
+        // return recent list
+        return dataBaseHelperList;
+    }
+
+    public List<DataBaseHelper> getImagePathFromServiceTable(String sMainCategory) {
+        List<DataBaseHelper> dataBaseHelperList = new ArrayList<>();
+        // Select All Query
+        //String selectQuery = "SELECT  * FROM " + TABLE_FOOD_BEVERAGES + " WHERE " + KEY_PRODUCT_TYPE + "= '" + sType+"'";
+        String selectQuery = "SELECT " + KEY_SUB_CATEGORY + "," + KEY_IMAGE_PATH + "," + KEY_TOTAL_DENT_COUNT + ","
+                + KEY_TOTAL_TIME + "," + KEY_TOTAL_COST + " FROM " + TABLE_SERVICE + " WHERE " + KEY_MAIN_CATEGORY
+                + "= '" + sMainCategory + "'";
+        //String selectQuery = "SELECT " + KEY_SUB_CATEGORY + "," + KEY_IMAGE_PATH + " FROM " + TABLE_SERVICE;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        //String sSubCategory = "";
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                DataBaseHelper dataBaseHelper = new DataBaseHelper();
+                dataBaseHelper.set_sub_category(cursor.getString(0));
+                dataBaseHelper.set_image_path(cursor.getString(1));
+                dataBaseHelper.set_total_dent_count(cursor.getInt(2));
+                dataBaseHelper.set_total_time(cursor.getString(3));
+                dataBaseHelper.set_total_cost(cursor.getString(4));
+                // Adding data to list
+                dataBaseHelperList.add(dataBaseHelper);
+                //sSubCategory = dataBaseHelperList.get(0).get_sub_category();
+                //} while (cursor.moveToNext());
+            } while (cursor.moveToNext());
+        }
+        // return recent list
+        return dataBaseHelperList;
     }
 
     public void updateImagePath(DataBaseHelper dataBaseHelper, int KEY_ID) {

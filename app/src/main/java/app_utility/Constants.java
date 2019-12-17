@@ -11,5 +11,8 @@ public enum Constants {
     MENU_ITEM_DELETE,
     DELETE_IMAGE,
     UPDATE_IMAGE_PATH,
-    ADD_ALL_DATA
+    ADD_ALL_DATA,
+    SAVE,
+    UPDATE_TOTAL_TIME,
+    UPDATE_TOTAL_COST
 }

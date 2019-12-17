@@ -33,11 +33,13 @@ import com.google.android.material.textview.MaterialTextView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import app_utility.Constants;
+import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
 import app_utility.DentsRVData;
 import app_utility.OnAdapterInterface;
@@ -71,6 +73,8 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
 
     private ImageView ivGallery, ivCamera, ivDentView;
     private MaterialTextView tvAddDents;
+    private MaterialTextView mtvTotalTime;
+    private MaterialTextView mtvTotalCost;
     private TextView tvPhotoStatus;
 
     private LinearLayout llBubbleParent;
@@ -78,6 +82,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
     private ArrayList<ImageView> alBubbleViews = new ArrayList<>();
     public static OnFragmentInteractionListener mListener;
     public static OnAdapterInterface onAdapterInterface;
+
     DatabaseHandler dbHandler;
 
     PhotoEditorView mPhotoEditorView;
@@ -95,6 +100,12 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
     DentInfoImagePagerAdapter dentInfoImagePagerAdapter;
     HashMap<Integer, DentsRVData> hmDents = new HashMap<>();
     private LinkedHashMap<Integer, DentsRVData> lhmDents = new LinkedHashMap<>();
+
+    float fTotalTime;
+    float fTotalCost;
+
+    String sTotalTime;
+    String sTotalCost;
 
     public DentInfoFragment() {
         // Required empty public constructor
@@ -138,7 +149,26 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
 
         initViews(view);
         onClickListener();
+        alDentsData = new ArrayList<>();
+        ArrayList<DataBaseHelper> alDB = new ArrayList<>(dbHandler.getDataBySubCategory(sSubCategory));
+        if(alDB.size()==1) {
+            alImagePath.addAll(Arrays.asList(alDB.get(0).get_image_path().split(",")));
 
+            //ArrayList<DentsRVData> alDentsData = new ArrayList<>();
+            ArrayList<String> alLength = new ArrayList<>(Arrays.asList(alDB.get(0).get_individual_length().split(",")));
+            ArrayList<String> alWidth = new ArrayList<>(Arrays.asList(alDB.get(0).get_individual_width().split(",")));
+            ArrayList<String> alDepth = new ArrayList<>(Arrays.asList(alDB.get(0).get_individual_depth().split(",")));
+            ArrayList<String> alTime = new ArrayList<>(Arrays.asList(alDB.get(0).get_individual_time().split(",")));
+            ArrayList<String> alCost = new ArrayList<>(Arrays.asList(alDB.get(0).get_individual_cost().split(",")));
+
+            for (int i = 0; i < alLength.size(); i++) {
+                DentsRVData dentsRVData = new DentsRVData(alLength.get(i), alWidth.get(i), alDepth.get(i), alTime.get(i),
+                        alCost.get(i));
+                alDentsData.add(dentsRVData);
+            }
+        }
+
+        //alDentsData.addAll(Arrays.asList(alDB.get(0).get_individual_length().split(",")));
 
         dentInfoImagePagerAdapter = new DentInfoImagePagerAdapter(getContext(), alImagePath);
         mViewPagerSlideShow.setOffscreenPageLimit(alImagePath.size() - 1);
@@ -150,12 +180,26 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
             }
         }
 
-        alDentsData = new ArrayList<>();
+
         alDentsData.addAll(lhmDents.values());
+
+        /*final Runnable r = new Runnable() {
+            public void run() {
+                for (int i = 0; i < alDentsData.size(); i++) {
+                    if (!alDentsData.get(i).getCost().equals(""))
+                        fTotalCost = fTotalCost + Float.valueOf(alDentsData.get(i).getCost());
+                    if (!alDentsData.get(i).getTimeInHours().equals(""))
+                        fTotalTime = fTotalCost + Float.valueOf(alDentsData.get(i).getTimeInHours());
+                }
+                mtvTotalTime.setText(String.valueOf(fTotalTime));
+                mtvTotalCost.setText(String.valueOf(fTotalCost));
+            }
+        };
+        r.run();*/
         //if(hmDents.size()>0){
         int length = alDentsData.size();
-        if(length==0)
-            length=1;
+        if (length == 0)
+            length = 1;
         imageViewRVAdapter = new DentsRVAdapter(getContext(), recyclerViewDentsInfo, alDentsData, length);
         recyclerViewDentsInfo.setAdapter(imageViewRVAdapter);
         //}
@@ -164,6 +208,8 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
     }
 
     private void initViews(View view) {
+        mtvTotalTime = view.findViewById(R.id.mtv_total_time);
+        mtvTotalCost = view.findViewById(R.id.mtv_total_cost);
         tvAddDents = view.findViewById(R.id.tv_add_dents);
         ivGallery = view.findViewById(R.id.iv_gallery);
         ivCamera = view.findViewById(R.id.iv_camera);
@@ -388,7 +434,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
     }
 
     @Override
-    public void onAdapterCall(int nCall) {
+    public void onAdapterCall(int nCall, boolean isAddition, float fData) {
         Constants constants = Constants.values()[nCall];
         switch (constants) {
             case SHOW_FAB:
@@ -409,7 +455,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
 
                 final Runnable r = new Runnable() {
                     public void run() {
-                        DentsRVAdapter.onAdapterInterface.onAdapterCall(ADD_ALL_DATA);
+                        DentsRVAdapter.onAdapterInterface.onAdapterCall(ADD_ALL_DATA, false, 0);
                     }
                 };
                 r.run();
@@ -451,6 +497,23 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
                 ft.replace(R.id.fl_container, transitionFragment);
                 ft.commit();*/
                 break;
+            case UPDATE_TOTAL_TIME:
+                if (isAddition)
+                    fTotalTime = fTotalTime + fData;
+                else
+                    fTotalTime = fTotalTime - fData;
+
+                mtvTotalTime.setText(String.valueOf(fTotalTime));
+                //sTotalTime = fData;
+                break;
+            case UPDATE_TOTAL_COST:
+                if (isAddition)
+                    fTotalCost = fTotalCost + fData;
+                else
+                    fTotalCost = fTotalCost - fData;
+                //sTotalCost = sData;
+                mtvTotalCost.setText(String.valueOf(fTotalCost));
+                break;
         }
     }
 
@@ -486,6 +549,33 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
                 }
                 addNewBubble();
                 MainActivity.onFragmentInteractionListener.onFragmentChange(MENU_ITEM_SAVE, "", true, null);
+                break;
+            case SAVE:
+                ArrayList<String> alIndividualTime = new ArrayList<>();
+                ArrayList<String> alIndividualCost = new ArrayList<>();
+                ArrayList<String> alIndividualLength = new ArrayList<>();
+                ArrayList<String> alIndividualWidth = new ArrayList<>();
+                ArrayList<String> alIndividualDepth = new ArrayList<>();
+
+                //ArrayList<Integer> alDentsKey = new ArrayList<>(lhmDents.keySet());
+                ArrayList<DentsRVData> alDentsValue = new ArrayList<>(lhmDents.values());
+                for (int i = 0; i < alDentsValue.size(); i++) {
+                    alIndividualTime.add(alDentsValue.get(i).getTimeInHours());
+                    alIndividualCost.add(alDentsValue.get(i).getCost());
+                    alIndividualLength.add(alDentsValue.get(i).getLength());
+                    alIndividualWidth.add(alDentsValue.get(i).getWidth());
+                    alIndividualDepth.add(alDentsValue.get(i).getDepth());
+                }
+                String sIndividualTime = android.text.TextUtils.join(",", alIndividualTime);
+                String sIndividualCost = android.text.TextUtils.join(",", alIndividualCost);
+                String sIndividualLength = android.text.TextUtils.join(",", alIndividualLength);
+                String sIndividualWidth = android.text.TextUtils.join(",", alIndividualWidth);
+                String sIndividualDepth = android.text.TextUtils.join(",", alIndividualDepth);
+
+                DataBaseHelper dataBaseHelper = new DataBaseHelper(sMainCategory, sSubCategory, android.text.TextUtils.join(",", alImagePath),
+                        sIndividualTime, sIndividualCost, sIndividualLength, sIndividualWidth, sIndividualDepth, alDentsValue.size(),
+                        String.valueOf(fTotalTime), String.valueOf(fTotalCost));
+                dbHandler.addDataToServiceTable(dataBaseHelper);
                 break;
         }
     }
