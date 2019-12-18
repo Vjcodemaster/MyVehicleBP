@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -103,7 +104,7 @@ public class SubMenuFragment extends Fragment {
             mLinearLayoutManager.setOrientation(RecyclerView.VERTICAL);
             // In portrait
         }
-        recyclerViewSubMenu.setLayoutParams(new LinearLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        recyclerViewSubMenu.setLayoutParams(new CoordinatorLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         recyclerViewSubMenu.setHasFixedSize(true);
         recyclerViewSubMenu.setLayoutManager(mLinearLayoutManager);
 

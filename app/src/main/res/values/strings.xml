@@ -36,4 +36,6 @@
     <string name="total_cost">Total Cost:</string>
 
     <string name="add_dent">Add</string>
+    <string name="request_for_approval">Request for Approval</string>
+    <string name="summary">Summary</string>
 </resources>
