@@ -2,6 +2,8 @@ package com.autochip.myvehicle;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -13,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -34,6 +37,7 @@ import static app_utility.PermissionHandler.APP_PERMISSION;
 import static app_utility.StaticReferenceClass.DELETE_IMAGE;
 import static app_utility.StaticReferenceClass.INVISIBLE;
 import static app_utility.StaticReferenceClass.SAVE;
+import static app_utility.StaticReferenceClass.SUPER_BACK_PRESS;
 import static app_utility.StaticReferenceClass.VISIBLE;
 
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
@@ -49,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     public static OnFragmentInteractionListener onFragmentInteractionListener;
     Menu menu;
     Toolbar toolbar;
+    boolean isSuperBackPressedStopped = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         switch (item.getItemId()) {
             //handles open and close of home button of actionbar/toolbar
             case R.id.action_save:
+                menuItemHandler(menu.findItem(R.id.action_save), INVISIBLE);
                 DentInfoFragment.mListener.onActivityToFragment(SAVE, "", null);
                 //mDrawerLayout.openDrawer(GravityCompat.START);
                 break;
@@ -236,17 +242,42 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fl_container);
             //currentFragment.getClass().getName();
             //String fragmentTag = getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
-            if (currentFragment.getClass().getName().equals(DentInfoFragment.class.getName()))
-                menuItemHandler(menu.findItem(R.id.action_save), INVISIBLE);
-            else if(currentFragment.getClass().getName().equals(TransitionFragment.class.getName()))
+            if (currentFragment.getClass().getName().equals(DentInfoFragment.class.getName())) {
+                if (menu.findItem(R.id.action_save).isVisible()) {
+                    isSuperBackPressedStopped = true;
+                    showSaveAlertDialog();
+                    menuItemHandler(menu.findItem(R.id.action_save), INVISIBLE);
+                }
+            } else if (currentFragment.getClass().getName().equals(TransitionFragment.class.getName()))
                 menuItemHandler(menu.findItem(R.id.action_delete), INVISIBLE);
         } else
             toolbarBackArrowVisibility(INVISIBLE);
-        super.onBackPressed();
+
+        if (!isSuperBackPressedStopped)
+            super.onBackPressed();
         /*if(getSupportFragmentManager().getBackStackEntryCount()==0) {
             //menuItemHandler(menu.findItem(R.id.action_save), INVISIBLE);
             toolbarBackArrowVisibility(INVISIBLE);
         }*/
+    }
+
+    private void showSaveAlertDialog() {
+        AlertDialog.Builder alertBluetooth = new AlertDialog.Builder(MainActivity.this);
+        alertBluetooth.setMessage(getResources().getString(R.string.alert_save))
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        DentInfoFragment.mListener.onActivityToFragment(SAVE, "", null);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        isSuperBackPressedStopped = false;
+                        dialog.dismiss();
+                        onBackPressed();
+                    }
+                })
+                .create()
+                .show();
     }
 
     /*private String saveImage(Bitmap image) {
@@ -316,6 +347,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                     menuItemHandler(menu.findItem(R.id.action_delete), VISIBLE);
                 else
                     menuItemHandler(menu.findItem(R.id.action_delete), INVISIBLE);
+                break;
+            case SUPER_BACK_PRESS:
+                isSuperBackPressedStopped = false;
                 break;
         }
     }

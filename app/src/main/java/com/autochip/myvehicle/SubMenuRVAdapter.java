@@ -89,7 +89,10 @@ public class SubMenuRVAdapter extends RecyclerView.Adapter<SubMenuRVAdapter.Menu
         r.run();*/
         if (hmSCWithImagePath.containsKey(alSubMenuNames.get(position))) {
             //holder.civAvatar.setImageURI(Uri.fromFile(new File(Objects.requireNonNull(hmSCWithImagePath.get(alSubMenuNames.get(position))))));
-            holder.civAvatar.setImageURI(Uri.fromFile(new File(Objects.requireNonNull(hmSCWithImagePath.get(alSubMenuNames.get(position))).getImagePath())));
+            if (hmSCWithImagePath.get(alSubMenuNames.get(position)).getImagePath().contains(","))
+                holder.civAvatar.setImageURI(Uri.fromFile(new File(Objects.requireNonNull(hmSCWithImagePath.get(alSubMenuNames.get(position))).getImagePath().split(",")[0])));
+            else
+                holder.civAvatar.setImageURI(Uri.fromFile(new File(Objects.requireNonNull(hmSCWithImagePath.get(alSubMenuNames.get(position))).getImagePath())));
 
             holder.mtvTime.setText(Objects.requireNonNull(hmSCWithImagePath.get(alSubMenuNames.get(position))).getTotalTime());
             holder.mtvCount.setText(String.valueOf(Objects.requireNonNull(hmSCWithImagePath.get(alSubMenuNames.get(position))).getTotalCount()));

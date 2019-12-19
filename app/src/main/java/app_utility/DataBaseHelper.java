@@ -64,8 +64,26 @@ public class DataBaseHelper {
         this._total_cost = _total_cost;
     }
 
+    public DataBaseHelper(String _image_path,
+                          String _individual_time, String _individual_cost, String _individual_length,
+                          String _individual_width, String _individual_depth, int _total_dent_count, String _total_time,
+                          String _total_cost){
+        this._image_path = _image_path;
+        this._individual_time = _individual_time;
+        this._individual_cost = _individual_cost;
+        this._individual_length = _individual_length;
+        this._individual_width = _individual_width;
+        this._individual_depth = _individual_depth;
+        this._total_dent_count = _total_dent_count;
+        this._total_time = _total_time;
+        this._total_cost = _total_cost;
+    }
+
     public int get_id(){
         return this._id;
+    }
+    public void set_id(int id){
+        this._id = id;
     }
 
     public String get_main_category(){

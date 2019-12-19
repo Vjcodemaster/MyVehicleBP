@@ -38,4 +38,7 @@
     <string name="add_dent">Add</string>
     <string name="request_for_approval">Request for Approval</string>
     <string name="summary">Summary</string>
+
+    <string name="alert_save">Do you want to save before exit?</string>
+    <string name="please_wait">Please wait&#8230;</string>
 </resources>

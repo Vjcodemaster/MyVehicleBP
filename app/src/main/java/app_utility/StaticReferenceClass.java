@@ -16,6 +16,7 @@ public class StaticReferenceClass {
     public static int SAVE = 11;
     public static int UPDATE_TOTAL_TIME = 12;
     public static int UPDATE_TOTAL_COST = 13;
+    public static int SUPER_BACK_PRESS = 14;
 
     public static int INVISIBLE = 0;
     public static int VISIBLE = 1;

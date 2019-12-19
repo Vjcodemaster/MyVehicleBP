@@ -249,7 +249,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //String selectQuery = "SELECT  * FROM " + TABLE_FOOD_BEVERAGES + " WHERE " + KEY_PRODUCT_TYPE + "= '" + sType+"'";
         String selectQuery = "SELECT " + KEY_IMAGE_PATH + "," + KEY_INDIVIDUAL_TIME + ","
                 + KEY_INDIVIDUAL_COST + "," + KEY_INDIVIDUAL_LENGTH + "," + KEY_INDIVIDUAL_WIDTH + "," + KEY_INDIVIDUAL_DEPTH + ","
-                + KEY_TOTAL_DENT_COUNT + "," + KEY_TOTAL_TIME + "," + KEY_TOTAL_COST + " FROM " + TABLE_SERVICE + " WHERE "
+                + KEY_TOTAL_DENT_COUNT + "," + KEY_TOTAL_TIME + "," + KEY_TOTAL_COST + "," + KEY_ID + " FROM " + TABLE_SERVICE + " WHERE "
                 + KEY_SUB_CATEGORY + "= '" + sSubCategory + "'";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -267,6 +267,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 dataBaseHelper.set_total_dent_count(cursor.getInt(6));
                 dataBaseHelper.set_total_time(cursor.getString(7));
                 dataBaseHelper.set_total_cost(cursor.getString(8));
+                dataBaseHelper.set_id(cursor.getInt(9));
                 // Adding data to list
                 dataBaseHelperList.add(dataBaseHelper);
             } while (cursor.moveToNext());
@@ -364,6 +365,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //values.put(KEY_NAME, dataBaseHelper.getName());
         //values.put(KEY_NUMBER, dataBaseHelper.getPhoneNumber());
         values.put(KEY_IMAGE_PATH, dataBaseHelper.get_image_path());
+
+        // updating row
+        //return db.update(TABLE_RECENT, values, column + "last_seen", new String[] {String.valueOf(KEY_ID)});
+        db.update(TABLE_SERVICE, values, "_id" + " = " + KEY_ID, null);
+    }
+
+    public void updateRowServiceTable(DataBaseHelper dataBaseHelper, int KEY_ID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        //String column = "last_seen";
+        ContentValues values = new ContentValues();
+        values.put(KEY_IMAGE_PATH, dataBaseHelper.get_image_path());
+        values.put(KEY_INDIVIDUAL_TIME, dataBaseHelper.get_individual_time());
+        values.put(KEY_INDIVIDUAL_COST, dataBaseHelper.get_individual_cost());
+        values.put(KEY_INDIVIDUAL_LENGTH, dataBaseHelper.get_individual_length());
+        values.put(KEY_INDIVIDUAL_WIDTH, dataBaseHelper.get_individual_width());
+        values.put(KEY_INDIVIDUAL_DEPTH, dataBaseHelper.get_individual_depth());
+        values.put(KEY_TOTAL_DENT_COUNT, dataBaseHelper.get_total_dent_count());
+        values.put(KEY_TOTAL_TIME, dataBaseHelper.get_total_time());
+        values.put(KEY_TOTAL_COST, dataBaseHelper.get_total_cost());
 
         // updating row
         //return db.update(TABLE_RECENT, values, column + "last_seen", new String[] {String.valueOf(KEY_ID)});

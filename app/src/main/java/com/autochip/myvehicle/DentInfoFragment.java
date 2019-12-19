@@ -29,6 +29,7 @@ import androidx.transition.TransitionInflater;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.io.File;
@@ -38,6 +39,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import app_utility.CircularProgressBar;
 import app_utility.Constants;
 import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
@@ -53,6 +55,7 @@ import static app_utility.StaticReferenceClass.ADD_ALL_DATA;
 import static app_utility.StaticReferenceClass.MENU_ITEM_DELETE;
 import static app_utility.StaticReferenceClass.MENU_ITEM_SAVE;
 import static app_utility.StaticReferenceClass.REQUEST_GALLERY_CODE;
+import static app_utility.StaticReferenceClass.SUPER_BACK_PRESS;
 
 
 /**
@@ -103,9 +106,13 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
 
     float fTotalTime;
     float fTotalCost;
+    int count = 0;
 
     String sTotalTime;
     String sTotalCost;
+
+    boolean isDataInDB = false;
+    int nDBID;
 
     public DentInfoFragment() {
         // Required empty public constructor
@@ -139,19 +146,11 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
         mListener = this;
         dbHandler = new DatabaseHandler(getContext());
 
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_dent_info, container, false);
-
-        initViews(view);
-        onClickListener();
         alDentsData = new ArrayList<>();
         ArrayList<DataBaseHelper> alDB = new ArrayList<>(dbHandler.getDataBySubCategory(sSubCategory));
-        if(alDB.size()==1) {
+        if (alDB.size() == 1) {
+            isDataInDB = true;
+            nDBID = alDB.get(0).get_id();
             alImagePath.addAll(Arrays.asList(alDB.get(0).get_image_path().split(",")));
 
             //ArrayList<DentsRVData> alDentsData = new ArrayList<>();
@@ -168,6 +167,18 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
             }
         }
 
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_dent_info, container, false);
+
+        initViews(view);
+        onClickListener();
+
+
         //alDentsData.addAll(Arrays.asList(alDB.get(0).get_individual_length().split(",")));
 
         dentInfoImagePagerAdapter = new DentInfoImagePagerAdapter(getContext(), alImagePath);
@@ -180,6 +191,9 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
             }
         }
 
+
+        if (count == 1)
+            alDentsData = new ArrayList<>();
 
         alDentsData.addAll(lhmDents.values());
 
@@ -203,7 +217,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
         imageViewRVAdapter = new DentsRVAdapter(getContext(), recyclerViewDentsInfo, alDentsData, length);
         recyclerViewDentsInfo.setAdapter(imageViewRVAdapter);
         //}
-
+        count = 1;
         return view;
     }
 
@@ -397,6 +411,34 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
         alBubbleViews.remove(imageView);
     }
 
+    /*private void fetchAllRVData() {
+        for (int i = 0; i < recyclerViewDentsInfo.getAdapter().getItemCount(); i++) {
+            final RecyclerView.ViewHolder holder = recyclerViewDentsInfo.getChildViewHolder(recyclerViewDentsInfo.getChildAt(i));
+            int id = holder.itemView.getId();
+            View itemView = recyclerViewDentsInfo.getChildAt(i);
+            //View itemView = Objects.requireNonNull(recyclerView.findViewHolderForAdapterPosition(i)).itemView;
+            TextInputLayout et = itemView.findViewById(R.id.et_length);
+            String sLength = et.getEditText().getText().toString().trim();
+
+            et = itemView.findViewById(R.id.et_width);
+            String sWidth = et.getEditText().getText().toString().trim();
+
+            et = itemView.findViewById(R.id.et_depth);
+            String sDepth = et.getEditText().getText().toString().trim();
+
+            et = itemView.findViewById(R.id.et_time);
+            String sTime = et.getEditText().getText().toString().trim();
+
+            et = itemView.findViewById(R.id.et_cost);
+            String sCost = et.getEditText().getText().toString().trim();
+
+            DentsRVData dentsRVData = new DentsRVData(sLength, sWidth, sDepth, sTime, sCost);
+            alDentsData.add(dentsRVData);
+            lhmDents.put(itemView.getId(), dentsRVData);
+            //hmDents.put(count, dentsRVData);
+        }
+    }*/
+
     /*@Override
     public void onResume(){
         super.onResume();
@@ -453,12 +495,14 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
                     }
                 }).start();*/
 
-                final Runnable r = new Runnable() {
+                /*final Runnable r = new Runnable() {
                     public void run() {
                         DentsRVAdapter.onAdapterInterface.onAdapterCall(ADD_ALL_DATA, false, 0);
                     }
                 };
-                r.run();
+                r.run();*/
+                //fetchAllRVData();
+                DentsRVAdapter.onAdapterInterface.onAdapterCall(ADD_ALL_DATA, false, 0);
                 //DentsRVAdapter.onAdapterInterface.onAdapterCall(ADD_ALL_DATA);
                 FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
                 //Fragment transitionFragment = TransitionFragment.newInstance(String.valueOf(ID), "", alImagePath);
@@ -480,22 +524,6 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
                 ft.addSharedElement(llBubbleParent, getString(R.string.ll_bubble_transition));
                 ft.commit();
                 MainActivity.onFragmentInteractionListener.onFragmentChange(MENU_ITEM_DELETE, "", true, null);
-                //transitionFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_image_transform));
-               /* transitionFragment.setSharedElementEnterTransition(new DetailsTransition());
-                transitionFragment.setEnterTransition(new Fade());
-                transitionFragment.setExitTransition(new Fade());
-                transitionFragment.setSharedElementReturnTransition(new DetailsTransition());*/
-
-                /*transitionFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_image_transform));
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    transitionFragment.setEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.explode));
-                }*/
-                //transitionFragment.setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(R.transition.change_image_transform));
-               /* ft.addSharedElement(mViewPagerSlideShow, ViewCompat.getTransitionName(mViewPagerSlideShow));
-                ft.addSharedElement(llBubbleParent, ViewCompat.getTransitionName(llBubbleParent));
-                ft.addToBackStack(null);
-                ft.replace(R.id.fl_container, transitionFragment);
-                ft.commit();*/
                 break;
             case UPDATE_TOTAL_TIME:
                 if (isAddition)
@@ -504,14 +532,12 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
                     fTotalTime = fTotalTime - fData;
 
                 mtvTotalTime.setText(String.valueOf(fTotalTime));
-                //sTotalTime = fData;
                 break;
             case UPDATE_TOTAL_COST:
                 if (isAddition)
                     fTotalCost = fTotalCost + fData;
                 else
                     fTotalCost = fTotalCost - fData;
-                //sTotalCost = sData;
                 mtvTotalCost.setText(String.valueOf(fTotalCost));
                 break;
         }
@@ -520,8 +546,6 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
     @Override
     public void onAdd(LinkedHashMap<Integer, DentsRVData> lhmDents) {
         this.lhmDents = lhmDents;
-        //this.alDentsData = alDentsData;
-        //this.hmDents = hmDents;
     }
 
     @Override
@@ -551,32 +575,53 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
                 MainActivity.onFragmentInteractionListener.onFragmentChange(MENU_ITEM_SAVE, "", true, null);
                 break;
             case SAVE:
-                ArrayList<String> alIndividualTime = new ArrayList<>();
-                ArrayList<String> alIndividualCost = new ArrayList<>();
-                ArrayList<String> alIndividualLength = new ArrayList<>();
-                ArrayList<String> alIndividualWidth = new ArrayList<>();
-                ArrayList<String> alIndividualDepth = new ArrayList<>();
+                CircularProgressBar circularProgressBar = new CircularProgressBar(getContext());
+                circularProgressBar.setCanceledOnTouchOutside(false);
+                circularProgressBar.setCancelable(false);
+                circularProgressBar.show();
+                //fetchAllRVData();
+                DentsRVAdapter.onAdapterInterface.onAdapterCall(ADD_ALL_DATA, false, 0);
 
-                //ArrayList<Integer> alDentsKey = new ArrayList<>(lhmDents.keySet());
-                ArrayList<DentsRVData> alDentsValue = new ArrayList<>(lhmDents.values());
-                for (int i = 0; i < alDentsValue.size(); i++) {
-                    alIndividualTime.add(alDentsValue.get(i).getTimeInHours());
-                    alIndividualCost.add(alDentsValue.get(i).getCost());
-                    alIndividualLength.add(alDentsValue.get(i).getLength());
-                    alIndividualWidth.add(alDentsValue.get(i).getWidth());
-                    alIndividualDepth.add(alDentsValue.get(i).getDepth());
-                }
-                String sIndividualTime = android.text.TextUtils.join(",", alIndividualTime);
-                String sIndividualCost = android.text.TextUtils.join(",", alIndividualCost);
-                String sIndividualLength = android.text.TextUtils.join(",", alIndividualLength);
-                String sIndividualWidth = android.text.TextUtils.join(",", alIndividualWidth);
-                String sIndividualDepth = android.text.TextUtils.join(",", alIndividualDepth);
-
-                DataBaseHelper dataBaseHelper = new DataBaseHelper(sMainCategory, sSubCategory, android.text.TextUtils.join(",", alImagePath),
-                        sIndividualTime, sIndividualCost, sIndividualLength, sIndividualWidth, sIndividualDepth, alDentsValue.size(),
-                        String.valueOf(fTotalTime), String.valueOf(fTotalCost));
-                dbHandler.addDataToServiceTable(dataBaseHelper);
+                saveData();
+                circularProgressBar.dismiss();
+                getActivity().onBackPressed();
                 break;
         }
+    }
+
+    private void saveData(){
+        ArrayList<String> alIndividualTime = new ArrayList<>();
+        ArrayList<String> alIndividualCost = new ArrayList<>();
+        ArrayList<String> alIndividualLength = new ArrayList<>();
+        ArrayList<String> alIndividualWidth = new ArrayList<>();
+        ArrayList<String> alIndividualDepth = new ArrayList<>();
+
+        ArrayList<DentsRVData> alDentsValue = new ArrayList<>(lhmDents.values());
+        for (int i = 0; i < alDentsValue.size(); i++) {
+            alIndividualTime.add(alDentsValue.get(i).getTimeInHours());
+            alIndividualCost.add(alDentsValue.get(i).getCost());
+            alIndividualLength.add(alDentsValue.get(i).getLength());
+            alIndividualWidth.add(alDentsValue.get(i).getWidth());
+            alIndividualDepth.add(alDentsValue.get(i).getDepth());
+        }
+        String sIndividualTime = android.text.TextUtils.join(",", alIndividualTime);
+        String sIndividualCost = android.text.TextUtils.join(",", alIndividualCost);
+        String sIndividualLength = android.text.TextUtils.join(",", alIndividualLength);
+        String sIndividualWidth = android.text.TextUtils.join(",", alIndividualWidth);
+        String sIndividualDepth = android.text.TextUtils.join(",", alIndividualDepth);
+
+        DataBaseHelper dataBaseHelper;
+        if (isDataInDB) {
+            dataBaseHelper = new DataBaseHelper(android.text.TextUtils.join(",", alImagePath),
+                    sIndividualTime, sIndividualCost, sIndividualLength, sIndividualWidth, sIndividualDepth, alDentsValue.size(),
+                    String.valueOf(fTotalTime), String.valueOf(fTotalCost));
+            dbHandler.updateRowServiceTable(dataBaseHelper, nDBID);
+        } else {
+            dataBaseHelper = new DataBaseHelper(sMainCategory, sSubCategory, android.text.TextUtils.join(",", alImagePath),
+                    sIndividualTime, sIndividualCost, sIndividualLength, sIndividualWidth, sIndividualDepth, alDentsValue.size(),
+                    String.valueOf(fTotalTime), String.valueOf(fTotalCost));
+            dbHandler.addDataToServiceTable(dataBaseHelper);
+        }
+        MainActivity.onFragmentInteractionListener.onFragmentChange(SUPER_BACK_PRESS, "", false, null);
     }
 }

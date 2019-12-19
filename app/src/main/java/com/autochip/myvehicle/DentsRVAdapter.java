@@ -20,7 +20,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 
 import app_utility.Constants;
@@ -28,6 +28,7 @@ import app_utility.DentsRVData;
 import app_utility.OnAdapterInterface;
 
 import static app_utility.StaticReferenceClass.HIDE_FAB;
+import static app_utility.StaticReferenceClass.MENU_ITEM_SAVE;
 import static app_utility.StaticReferenceClass.SHOW_FAB;
 import static app_utility.StaticReferenceClass.UPDATE_TOTAL_COST;
 import static app_utility.StaticReferenceClass.UPDATE_TOTAL_TIME;
@@ -81,18 +82,92 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
             holder.etTime.getEditText().setText(alDentsData.get(position).getTimeInHours());
             holder.etCost.getEditText().setText(alDentsData.get(position).getCost());
             lhmDents.put(count, alDentsData.get(position));
+            //alDentsData.remove(position);
             //hmDents.put(count, alDentsData.get(position));
+        } else {
+            lhmDents.put(count, new DentsRVData());
         }
         holder.mcvParentID.setId(count);
 
 
+
+        //count++;
+        //holder.mtvParentID.setId(count);
+        //Toast.makeText(context, count+"", Toast.LENGTH_SHORT).show();
+        //holder.spinnerLength.setSelection(0);
+        holder.mtvDentCount.setText(String.valueOf(position + 1));
+        onClick(holder, position, count);
+        //hmDents.put()
+    }
+
+    private void onClick(@NonNull final MenuItemTabHolder holder, int position, final int id){
+        holder.etLength.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //int id = holder.mtvDentCount.getId();
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                DentsRVData dentsRVData = lhmDents.get(id);
+                dentsRVData.setLength(s.toString());
+                lhmDents.put(id, dentsRVData);
+                MainActivity.onFragmentInteractionListener.onFragmentChange(MENU_ITEM_SAVE, "", true, null);
+            }
+        });
+
+        holder.etWidth.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                DentsRVData dentsRVData = lhmDents.get(id);
+                dentsRVData.setWidth(s.toString());
+                lhmDents.put(id, dentsRVData);
+                MainActivity.onFragmentInteractionListener.onFragmentChange(MENU_ITEM_SAVE, "", true, null);
+            }
+        });
+
+        holder.etDepth.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                DentsRVData dentsRVData = lhmDents.get(id);
+                dentsRVData.setDepth(s.toString());
+                lhmDents.put(id, dentsRVData);
+                MainActivity.onFragmentInteractionListener.onFragmentChange(MENU_ITEM_SAVE, "", true, null);
+            }
+        });
         holder.etTime.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 String s1 = s.toString().trim();
                 if(s1.isEmpty())
                     fBefore = 0;
-                 else
+                else
                     fBefore = Float.valueOf(s1);
             }
 
@@ -110,9 +185,10 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                     fData = fAfter - fBefore;
                 }
                 DentInfoFragment.onAdapterInterface.onAdapterCall(UPDATE_TOTAL_TIME, true, fData);
-                //float fData = Float.valueOf(holder.etTime.getEditText().getText().toString().trim());
-                //DentInfoFragment.onAdapterInterface.onAdapterCall(UPDATE_TOTAL_TIME, false, fData);
-                //Toast.makeText(context, s.toString(), Toast.LENGTH_SHORT).show();
+                DentsRVData dentsRVData = lhmDents.get(id);
+                dentsRVData.setTimeInHours(s.toString());
+                lhmDents.put(id, dentsRVData);
+                MainActivity.onFragmentInteractionListener.onFragmentChange(MENU_ITEM_SAVE, "", true, null);
             }
         });
 
@@ -140,16 +216,12 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                     fData = fAfter - fBefore;
                 }
                 DentInfoFragment.onAdapterInterface.onAdapterCall(UPDATE_TOTAL_COST, true, fData);
-                //float fData = Float.valueOf(holder.etCost.getEditText().getText().toString().trim());
-                //DentInfoFragment.onAdapterInterface.onAdapterCall(UPDATE_TOTAL_COST, false, fData);
+                DentsRVData dentsRVData = lhmDents.get(id);
+                dentsRVData.setCost(s.toString());
+                lhmDents.put(id, dentsRVData);
+                MainActivity.onFragmentInteractionListener.onFragmentChange(MENU_ITEM_SAVE, "", true, null);
             }
         });
-        //count++;
-        //holder.mtvParentID.setId(count);
-        //Toast.makeText(context, count+"", Toast.LENGTH_SHORT).show();
-        //holder.spinnerLength.setSelection(0);
-        holder.mtvDentCount.setText(String.valueOf(position + 1));
-        //hmDents.put()
     }
 
     @Override
@@ -167,7 +239,8 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
         Constants constants = Constants.values()[nCall];
         switch (constants) {
             case ADD_ALL_DATA:
-                addAllDataToList();
+                DentInfoFragment.onAdapterInterface.onAdd(lhmDents);
+                //addAllDataToList();
                 break;
         }
     }
@@ -175,32 +248,35 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
     @Override
     public void onAdd(LinkedHashMap<Integer, DentsRVData> lhmDents) {
         //recyclerView.getAdapter().getItemCount();
-        String sLength = holder.etLength.getEditText().getText().toString().trim();
-        if (sLength.length() == 0) {
-            Toast.makeText(context, "Please enter Length", Toast.LENGTH_SHORT).show();
-            return;
+        if(this.lhmDents.size()>0) {
+            String sLength = holder.etLength.getEditText().getText().toString().trim();
+            if (sLength.length() == 0) {
+                Toast.makeText(context, "Please enter Length", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String sWidth = holder.etWidth.getEditText().getText().toString().trim();
+            if (sWidth.length() == 0) {
+                Toast.makeText(context, "Please enter Width", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String sDepth = holder.etDepth.getEditText().getText().toString().trim();
+            if (sDepth.length() == 0) {
+                Toast.makeText(context, "Please enter Depth", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String sTime = holder.etTime.getEditText().getText().toString().trim();
+            if (sTime.length() == 0) {
+                Toast.makeText(context, "Please enter Time", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String sCost = holder.etCost.getEditText().getText().toString().trim();
+            if (sCost.length() == 0) {
+                Toast.makeText(context, "Please enter Cost", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
-        String sWidth = holder.etWidth.getEditText().getText().toString().trim();
-        if (sWidth.length() == 0) {
-            Toast.makeText(context, "Please enter Width", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String sDepth = holder.etDepth.getEditText().getText().toString().trim();
-        if (sDepth.length() == 0) {
-            Toast.makeText(context, "Please enter Depth", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String sTime = holder.etTime.getEditText().getText().toString().trim();
-        if (sTime.length() == 0) {
-            Toast.makeText(context, "Please enter Time", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String sCost = holder.etCost.getEditText().getText().toString().trim();
-        if (sCost.length() == 0) {
-            Toast.makeText(context, "Please enter Cost", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        length++;
+
+        //notifyDataSetChanged();
         notifyItemInserted(length);
         recyclerView.smoothScrollToPosition(length);
         //this.alDentsData.add(dentsRVData);
@@ -208,6 +284,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
         //hmDents.put(count, dentsRVData);
         //DentInfoFragment.onAdapterInterface.onAdd(alDentsData);
         //addAllDataToList();
+        length++;
     }
 
    /* private void addLastItem(){
@@ -233,7 +310,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
         DentInfoFragment.onAdapterInterface.onAdd(alDentsData);
     }*/
 
-    private void addAllDataToList() {
+    /*private void addAllDataToList() {
         for (int i = 0; i < recyclerView.getAdapter().getItemCount(); i++) {
             View itemView = recyclerView.getChildAt(i);
             //View itemView = Objects.requireNonNull(recyclerView.findViewHolderForAdapterPosition(i)).itemView;
@@ -258,7 +335,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
             //hmDents.put(count, dentsRVData);
         }
         DentInfoFragment.onAdapterInterface.onAdd(lhmDents);
-    }
+    }*/
 
     @Override
     public void onDelete(int pos) {
@@ -270,20 +347,23 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
         }
         nALSelectedItemIndex.clear();*/
         //hmDents.remove(count);
-
+        Collections.sort(nALSelectedItemIndex, Collections.reverseOrder());
         for (int i = 0; i < nALSelectedItemIndex.size(); i++) {
             int indexToDelete = nALSelectedItemIndex.get(i);
             if (alDentsData.size() > indexToDelete)
                 alDentsData.remove(indexToDelete);
             int ID = recyclerView.getChildAt(indexToDelete).getId();
+            recyclerView.removeViewAt(indexToDelete);
             lhmDents.remove(ID);
             length--;
             notifyItemRemoved(nALSelectedItemIndex.get(i));
         }
         DentInfoFragment.onAdapterInterface.onAdd(lhmDents);
+        MainActivity.onFragmentInteractionListener.onFragmentChange(MENU_ITEM_SAVE, "", true, null);
         nALSelectedItemIndex.clear();
-        if(lhmDents.size()==0)
-            count=0;
+        if(lhmDents.size()==0) {
+            count = 0;
+        }
     }
 
     class MenuItemTabHolder extends RecyclerView.ViewHolder {

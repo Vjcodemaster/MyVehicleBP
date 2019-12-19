@@ -14,5 +14,6 @@ public enum Constants {
     ADD_ALL_DATA,
     SAVE,
     UPDATE_TOTAL_TIME,
-    UPDATE_TOTAL_COST
+    UPDATE_TOTAL_COST,
+    SUPER_BACK_PRESS
 }

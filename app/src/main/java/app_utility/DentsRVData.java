@@ -21,6 +21,25 @@ public class DentsRVData {
         this.cost = sCost;
     }
 
+    public void setLength(String sLength){
+        this.length = sLength;
+    }
+
+    public void setWidth(String sWidth){
+        this.width = sWidth;
+    }
+
+    public void setDepth(String sDepth){
+        this.depth = sDepth;
+    }
+
+    public void setTimeInHours(String sTimeInHours){
+        this.timeInHours = sTimeInHours;
+    }
+
+    public void setCost(String sCost){
+        this.cost = sCost;
+    }
     public String getLength(){
         return this.length;
     }
