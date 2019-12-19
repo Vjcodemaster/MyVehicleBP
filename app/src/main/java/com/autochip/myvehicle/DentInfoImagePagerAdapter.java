@@ -55,7 +55,7 @@ public class DentInfoImagePagerAdapter extends PagerAdapter {
         ivDentImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DentInfoFragment.onAdapterInterface.onAdapterCall(TRANSITION_FRAGMENT, false, 0);
+                DentInfoFragment.onAdapterInterface.onAdapterCall(TRANSITION_FRAGMENT, false, 0, null);
             }
         });
         ivDentImage.setImageURI(Uri.fromFile(new File(alImagePath.get(position))));

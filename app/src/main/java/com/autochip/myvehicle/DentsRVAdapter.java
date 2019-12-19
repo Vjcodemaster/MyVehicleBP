@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
@@ -29,6 +30,7 @@ import app_utility.OnAdapterInterface;
 
 import static app_utility.StaticReferenceClass.HIDE_FAB;
 import static app_utility.StaticReferenceClass.MENU_ITEM_SAVE;
+import static app_utility.StaticReferenceClass.RESET_RECYCLER_VIEW;
 import static app_utility.StaticReferenceClass.SHOW_FAB;
 import static app_utility.StaticReferenceClass.UPDATE_TOTAL_COST;
 import static app_utility.StaticReferenceClass.UPDATE_TOTAL_TIME;
@@ -47,6 +49,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
     float fBefore, fAfter;
 
     private static ArrayList<Integer> nALSelectedItemIndex = new ArrayList<>();
+    private static ArrayList<Integer> alSelectedItemID = new ArrayList<>();
 
     public static OnAdapterInterface onAdapterInterface;
     MenuItemTabHolder holder;
@@ -184,7 +187,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                     fAfter = Float.valueOf(s1);
                     fData = fAfter - fBefore;
                 }
-                DentInfoFragment.onAdapterInterface.onAdapterCall(UPDATE_TOTAL_TIME, true, fData);
+                DentInfoFragment.onAdapterInterface.onAdapterCall(UPDATE_TOTAL_TIME, true, fData, null);
                 DentsRVData dentsRVData = lhmDents.get(id);
                 dentsRVData.setTimeInHours(s.toString());
                 lhmDents.put(id, dentsRVData);
@@ -215,7 +218,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                     fAfter = Float.valueOf(s1);
                     fData = fAfter - fBefore;
                 }
-                DentInfoFragment.onAdapterInterface.onAdapterCall(UPDATE_TOTAL_COST, true, fData);
+                DentInfoFragment.onAdapterInterface.onAdapterCall(UPDATE_TOTAL_COST, true, fData, null);
                 DentsRVData dentsRVData = lhmDents.get(id);
                 dentsRVData.setCost(s.toString());
                 lhmDents.put(id, dentsRVData);
@@ -235,7 +238,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
     }
 
     @Override
-    public void onAdapterCall(int nCall, boolean isAddition, float fData) {
+    public void onAdapterCall(int nCall, boolean isAddition, float fData,ArrayList<DentsRVData> alDentsData) {
         Constants constants = Constants.values()[nCall];
         switch (constants) {
             case ADD_ALL_DATA:
@@ -339,15 +342,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
 
     @Override
     public void onDelete(int pos) {
-        /*for (int i = 0; i < nALSelectedItemIndex.size(); i++) {
-            int ID = recyclerView.getChildAt(nALSelectedItemIndex.get(i)).getId();
-            hmDents.remove(ID);
-            length--;
-            notifyItemRemoved(nALSelectedItemIndex.get(i));
-        }
-        nALSelectedItemIndex.clear();*/
-        //hmDents.remove(count);
-        Collections.sort(nALSelectedItemIndex, Collections.reverseOrder());
+        /*Collections.sort(nALSelectedItemIndex, Collections.reverseOrder());
         for (int i = 0; i < nALSelectedItemIndex.size(); i++) {
             int indexToDelete = nALSelectedItemIndex.get(i);
             if (alDentsData.size() > indexToDelete)
@@ -363,7 +358,26 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
         nALSelectedItemIndex.clear();
         if(lhmDents.size()==0) {
             count = 0;
+        }*/
+        Collections.sort(nALSelectedItemIndex, Collections.reverseOrder());
+        for (int i=0; i<nALSelectedItemIndex.size(); i++){
+            //lhmDents.remove(alSelectedItemID.get(i));
+            int indexToDelete = nALSelectedItemIndex.get(i);
+            if (alDentsData.size() > indexToDelete)
+                alDentsData.remove(indexToDelete);
+            length--;
+            /*try {
+                ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+                recyclerView.removeViewAt(indexToDelete);
+            }catch (Exception e){
+                e.printStackTrace();
+            }*/
+            notifyItemRemoved(nALSelectedItemIndex.get(i));
         }
+
+        nALSelectedItemIndex.clear();
+        alSelectedItemID.clear();
+        DentInfoFragment.onAdapterInterface.onAdapterCall(RESET_RECYCLER_VIEW, false, 0, alDentsData);
     }
 
     class MenuItemTabHolder extends RecyclerView.ViewHolder {
@@ -428,7 +442,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                      */
                     //adds the view of the recyclerView
                     View child = recycleView.findChildViewUnder(e.getX(), e.getY());
-                    //int index = child.getId();
+                    //int id = child.getId();
                     //int id = child.findViewById(R.id.mcv_parent_id).getId();
                     //gets the index of recyclerView
                     int index = recycleView.getChildAdapterPosition(child);
@@ -443,7 +457,8 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                         if (nALSelectedItemIndex.size() >= 1 && !nALSelectedItemIndex.contains(index)) {
                             child.setBackgroundColor(ContextCompat.getColor(context, R.color.lightGrey));
                             nALSelectedItemIndex.add(index);
-                            DentInfoFragment.onAdapterInterface.onAdapterCall(SHOW_FAB, false,0);
+                            //alSelectedItemID.add(id);
+                            DentInfoFragment.onAdapterInterface.onAdapterCall(SHOW_FAB, false,0, null);
                         } else {
                             child.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white));
                             if (nALSelectedItemIndex.size() >= 1) {
@@ -452,12 +467,12 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                             in the arraylist and incase if it is present, we will add the index of the selected position into nRemoveIndex and then delete
                             that position
                              */
-                                int nRemoveIndex = nALSelectedItemIndex.indexOf(index);
-                                nALSelectedItemIndex.remove(nRemoveIndex);
+                                nALSelectedItemIndex.remove((Integer) index);
+                                //alSelectedItemID.remove((Integer) id);
                                 //DentInfoFragment.onAdapterInterface.onAdapterCall(SHOW_FAB);
                             }
                             if (nALSelectedItemIndex.size() == 0)
-                                DentInfoFragment.onAdapterInterface.onAdapterCall(HIDE_FAB, false,0);
+                                DentInfoFragment.onAdapterInterface.onAdapterCall(HIDE_FAB, false,0, null);
                         }
                     }
                     return true;
@@ -469,7 +484,7 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                     if (child != null && clicklistener != null) {
                         clicklistener.onLongClick(child, recycleView.getChildAdapterPosition(child));
                         int index = recycleView.getChildAdapterPosition(child);
-                        //int index = child.getId();
+                        //int id = child.getId();
                         /*
                         below if statement checks for one condition.
                         if hashset doesn't contain the position already the background is set to grey(which means selected) as well as added to the hashset
@@ -478,19 +493,21 @@ public class DentsRVAdapter extends RecyclerView.Adapter<DentsRVAdapter.MenuItem
                          */
                         if (!nALSelectedItemIndex.contains(index)) {
                             nALSelectedItemIndex.add(index);
+                            //alSelectedItemID.add(id);
                             child.setBackgroundColor(ContextCompat.getColor(context, R.color.lightGrey));
                         } else {
                             //nALSelectedItemIndex.size();
                             if (nALSelectedItemIndex.contains(index)) {
                                 child.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white));
                                 nALSelectedItemIndex.remove((Integer) index);
+                                //alSelectedItemID.remove(id);
                             }
                         }
                         if (nALSelectedItemIndex.size() > 0) {
-                            DentInfoFragment.onAdapterInterface.onAdapterCall(SHOW_FAB, false,0);
+                            DentInfoFragment.onAdapterInterface.onAdapterCall(SHOW_FAB, false,0,null);
                             isInDeleteMode = true;
                         } else {
-                            DentInfoFragment.onAdapterInterface.onAdapterCall(HIDE_FAB, false,0);
+                            DentInfoFragment.onAdapterInterface.onAdapterCall(HIDE_FAB, false,0,null);
                             isInDeleteMode = false;
                         }
                     }

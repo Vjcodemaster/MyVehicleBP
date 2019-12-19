@@ -94,7 +94,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
 
     RecyclerView recyclerViewDentsInfo;
     private ViewPager mViewPagerSlideShow;
-    DentsRVAdapter imageViewRVAdapter;
+    DentsRVAdapter dentsRVAdapter;
     FloatingActionButton fabDelete;
     int nScrollIndex = 0;
     ArrayList<String> alImagePath = new ArrayList<>();
@@ -214,8 +214,8 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
         int length = alDentsData.size();
         if (length == 0)
             length = 1;
-        imageViewRVAdapter = new DentsRVAdapter(getContext(), recyclerViewDentsInfo, alDentsData, length);
-        recyclerViewDentsInfo.setAdapter(imageViewRVAdapter);
+        dentsRVAdapter = new DentsRVAdapter(getContext(), recyclerViewDentsInfo, alDentsData, length);
+        recyclerViewDentsInfo.setAdapter(dentsRVAdapter);
         //}
         count = 1;
         return view;
@@ -476,7 +476,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
     }
 
     @Override
-    public void onAdapterCall(int nCall, boolean isAddition, float fData) {
+    public void onAdapterCall(int nCall, boolean isAddition, float fData, ArrayList<DentsRVData> alDentsData) {
         Constants constants = Constants.values()[nCall];
         switch (constants) {
             case SHOW_FAB:
@@ -502,7 +502,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
                 };
                 r.run();*/
                 //fetchAllRVData();
-                DentsRVAdapter.onAdapterInterface.onAdapterCall(ADD_ALL_DATA, false, 0);
+                DentsRVAdapter.onAdapterInterface.onAdapterCall(ADD_ALL_DATA, false, 0, null);
                 //DentsRVAdapter.onAdapterInterface.onAdapterCall(ADD_ALL_DATA);
                 FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
                 //Fragment transitionFragment = TransitionFragment.newInstance(String.valueOf(ID), "", alImagePath);
@@ -539,6 +539,11 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
                 else
                     fTotalCost = fTotalCost - fData;
                 mtvTotalCost.setText(String.valueOf(fTotalCost));
+                break;
+            case RESET_RECYCLER_VIEW:
+                dentsRVAdapter = new DentsRVAdapter(getContext(), recyclerViewDentsInfo, alDentsData, alDentsData.size());
+                recyclerViewDentsInfo.setAdapter(dentsRVAdapter);
+                MainActivity.onFragmentInteractionListener.onFragmentChange(MENU_ITEM_SAVE, "", true, null);
                 break;
         }
     }
@@ -580,7 +585,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
                 circularProgressBar.setCancelable(false);
                 circularProgressBar.show();
                 //fetchAllRVData();
-                DentsRVAdapter.onAdapterInterface.onAdapterCall(ADD_ALL_DATA, false, 0);
+                DentsRVAdapter.onAdapterInterface.onAdapterCall(ADD_ALL_DATA, false, 0,null);
 
                 saveData();
                 circularProgressBar.dismiss();

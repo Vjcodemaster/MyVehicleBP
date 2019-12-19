@@ -125,7 +125,7 @@ public class SubMenuRVAdapter extends RecyclerView.Adapter<SubMenuRVAdapter.Menu
     }
 
     @Override
-    public void onAdapterCall(int nCall, boolean isAddition, float fData) {
+    public void onAdapterCall(int nCall, boolean isAddition, float fData, ArrayList<DentsRVData> alDentsData) {
 
     }
 

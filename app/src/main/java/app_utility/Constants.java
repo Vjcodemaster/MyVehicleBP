@@ -15,5 +15,6 @@ public enum Constants {
     SAVE,
     UPDATE_TOTAL_TIME,
     UPDATE_TOTAL_COST,
-    SUPER_BACK_PRESS
+    SUPER_BACK_PRESS,
+    RESET_RECYCLER_VIEW
 }
