@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
@@ -73,6 +74,8 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
 
     private String sMainCategory;
     private String sSubCategory;
+
+    boolean isFieldsBlank = false;
 
     private ImageView ivGallery, ivCamera, ivDentView;
     private MaterialTextView tvAddDents;
@@ -589,6 +592,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
 
                 saveData();
                 circularProgressBar.dismiss();
+                if(!isFieldsBlank)
                 getActivity().onBackPressed();
                 break;
         }
@@ -603,6 +607,41 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
 
         ArrayList<DentsRVData> alDentsValue = new ArrayList<>(lhmDents.values());
         for (int i = 0; i < alDentsValue.size(); i++) {
+
+            //this if condition is only to check if the last element is empty and in recylcerview
+            if (i == alDentsValue.size()-1) {
+                if(alDentsValue.get(i).getTimeInHours()==null){
+                    Toast.makeText(getContext(), "please fill all the fields.", Toast.LENGTH_SHORT).show();
+                    recyclerViewDentsInfo.smoothScrollToPosition(alDentsValue.size()-1);
+                    isFieldsBlank = true;
+                    return;
+                }
+                if(alDentsValue.get(i).getCost()==null){
+                    Toast.makeText(getContext(), "please fill all the fields.", Toast.LENGTH_SHORT).show();
+                    recyclerViewDentsInfo.smoothScrollToPosition(alDentsValue.size()-1);
+                    isFieldsBlank = true;
+                    return;
+                }
+                if(alDentsValue.get(i).getLength()==null){
+                    Toast.makeText(getContext(), "please fill all the fields.", Toast.LENGTH_SHORT).show();
+                    recyclerViewDentsInfo.smoothScrollToPosition(alDentsValue.size()-1);
+                    isFieldsBlank = true;
+                    return;
+                }
+                if(alDentsValue.get(i).getWidth()==null){
+                    Toast.makeText(getContext(), "please fill all the fields.", Toast.LENGTH_SHORT).show();
+                    recyclerViewDentsInfo.smoothScrollToPosition(alDentsValue.size()-1);
+                    isFieldsBlank = true;
+                    return;
+                }
+                if(alDentsValue.get(i).getDepth()==null){
+                    Toast.makeText(getContext(), "please fill all the fields.", Toast.LENGTH_SHORT).show();
+                    recyclerViewDentsInfo.smoothScrollToPosition(alDentsValue.size()-1);
+                    isFieldsBlank = true;
+                    return;
+                }
+                isFieldsBlank = false;
+            }
             alIndividualTime.add(alDentsValue.get(i).getTimeInHours());
             alIndividualCost.add(alDentsValue.get(i).getCost());
             alIndividualLength.add(alDentsValue.get(i).getLength());

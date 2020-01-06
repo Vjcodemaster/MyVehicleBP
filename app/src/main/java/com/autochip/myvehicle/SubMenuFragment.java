@@ -8,12 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +51,8 @@ public class SubMenuFragment extends Fragment {
 
     DatabaseHandler dbHandler;
     RecyclerView recyclerViewSubMenu;
-
+    BottomSheetBehavior sheetBehavior;
+    FrameLayout flBottomSheet;
 
     public SubMenuFragment() {
         // Required empty public constructor
@@ -107,7 +112,36 @@ public class SubMenuFragment extends Fragment {
         recyclerViewSubMenu.setLayoutParams(new CoordinatorLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         recyclerViewSubMenu.setHasFixedSize(true);
         recyclerViewSubMenu.setLayoutManager(mLinearLayoutManager);
+        flBottomSheet = view.findViewById(R.id.bottom_sheet);
+        sheetBehavior = BottomSheetBehavior.from(flBottomSheet);
 
+        sheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED: {
+                        //btnBottomSheet.setText("Close Sheet");
+                    }
+                    break;
+                    case BottomSheetBehavior.STATE_COLLAPSED: {
+                        //btnBottomSheet.setText("Expand Sheet");
+                    }
+                    break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                    case BottomSheetBehavior.STATE_SETTLING:
+                    case BottomSheetBehavior.STATE_HALF_EXPANDED:
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
         /*ArrayList<DataBaseHelper> alDB = new ArrayList<>(dbHandler.getSCFromSTByMCName(mMainCategory));
         ArrayList<String> alSubMenuName = new ArrayList<>();
         ArrayList<String> alSubMenuImagePath = new ArrayList<>();
@@ -147,14 +181,28 @@ public class SubMenuFragment extends Fragment {
         }*/
         //HashMap<String, String> hmSCWithImagePath = new HashMap<>();
         HashMap<String, SubMenuRVData> hmSCWithImagePath = new HashMap<>();
+        float fTotalTime = 0;
+        float fTotalCost = 0;
+        int count = 0;
         for (int i = 0; i < alDB.size(); i++) {
             String sSC = alDB.get(i).get_sub_category();
             //String sIP = alDB.get(i).get_image_path();
             SubMenuRVData subMenuRVData = new SubMenuRVData(alDB.get(i).get_image_path(), alDB.get(i).get_total_dent_count(),
                     alDB.get(i).get_total_cost(), alDB.get(i).get_total_time());
             //hmSCWithImagePath.put(sSC, sIP);
+            fTotalTime = fTotalTime + Float.valueOf(alDB.get(i).get_total_time());
+            fTotalCost = fTotalCost + Float.valueOf(alDB.get(i).get_total_cost());
+            count = count + alDB.get(i).get_total_dent_count();
             hmSCWithImagePath.put(sSC, subMenuRVData);
         }
+
+        TextView tvDentCount = flBottomSheet.findViewById(R.id.mtv_bs_dent_count);
+        TextView tvCost = flBottomSheet.findViewById(R.id.mtv_bs_cost);
+        TextView tvTime = flBottomSheet.findViewById(R.id.mtv_bs_time);
+
+        tvDentCount.setText(String.valueOf(count));
+        tvCost.setText(String.valueOf(fTotalCost));
+        tvTime.setText(String.valueOf(fTotalTime));
 
        /* alSubMenuName.add("Roof");
         alSubMenuName.add("Hood");
@@ -166,6 +214,38 @@ public class SubMenuFragment extends Fragment {
         //SubMenuRVAdapter imageViewRVAdapter = new SubMenuRVAdapter(getContext(), recyclerViewSubMenu, mMainCategory, alSubMenuName, alSubMenuImagePath);
         SubMenuRVAdapter imageViewRVAdapter = new SubMenuRVAdapter(getContext(), recyclerViewSubMenu, mMainCategory, alSubMenuName, hmSCWithImagePath);
         recyclerViewSubMenu.setAdapter(imageViewRVAdapter);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        /*final ArrayList<String> alSubMenuName = new ArrayList<>(Arrays.asList(dbHandler.getSCByMCNameMainTable(mMainCategory).split(",")));
+
+        ArrayList<DataBaseHelper> alDB = new ArrayList<>(dbHandler.getImagePathFromServiceTable(mMainCategory));
+        HashMap<String, SubMenuRVData> hmSCWithImagePath = new HashMap<>();
+        float fTotalTime = 0;
+        float fTotalCost = 0;
+        int count = 0;
+        for (int i = 0; i < alDB.size(); i++) {
+            String sSC = alDB.get(i).get_sub_category();
+            SubMenuRVData subMenuRVData = new SubMenuRVData(alDB.get(i).get_image_path(), alDB.get(i).get_total_dent_count(),
+                    alDB.get(i).get_total_cost(), alDB.get(i).get_total_time());
+            fTotalTime = fTotalTime + Float.valueOf(alDB.get(i).get_total_time());
+            fTotalCost = fTotalCost + Float.valueOf(alDB.get(i).get_total_cost());
+            count = count + alDB.get(i).get_total_dent_count();
+            hmSCWithImagePath.put(sSC, subMenuRVData);
+        }
+
+        TextView tvDentCount = flBottomSheet.findViewById(R.id.mtv_bs_dent_count);
+        TextView tvCost = flBottomSheet.findViewById(R.id.mtv_bs_cost);
+        TextView tvTime = flBottomSheet.findViewById(R.id.mtv_bs_time);
+
+        tvDentCount.setText(String.valueOf(count));
+        tvCost.setText(String.valueOf(fTotalCost));
+        tvTime.setText(String.valueOf(fTotalTime));
+
+        SubMenuRVAdapter imageViewRVAdapter = new SubMenuRVAdapter(getContext(), recyclerViewSubMenu, mMainCategory, alSubMenuName, hmSCWithImagePath);
+        recyclerViewSubMenu.setAdapter(imageViewRVAdapter);*/
     }
 
     @Override
