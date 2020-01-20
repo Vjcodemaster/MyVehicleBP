@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             case R.id.btn_body_paint:
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 Fragment subMenuFragment = SubMenuFragment.newInstance(alMainCategory.get(0), "");
-                ft.add(R.id.fl_container, subMenuFragment);
+                ft.replace(R.id.fl_container, subMenuFragment);
                 ft.addToBackStack(null);
                 ft.commit();
                 toolbarBackArrowVisibility(VISIBLE);
@@ -319,8 +319,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 sCurrentMainCategory = sCase.split(",")[0];
                 sCurrentSubCategory = sCase.split(",")[1];
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                Fragment subMenuFragment = DentInfoFragment.newInstance(sCurrentMainCategory, sCurrentSubCategory);
-                ft.add(R.id.fl_container, subMenuFragment);
+                Fragment dentInfoFragment = DentInfoFragment.newInstance(sCurrentMainCategory, sCurrentSubCategory);
+                ft.replace(R.id.fl_container, dentInfoFragment);
                 ft.addToBackStack(null);
                 ft.commit();
                 //menuItemHandler(menu.findItem(R.id.action_save), VISIBLE);

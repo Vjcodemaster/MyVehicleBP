@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +54,9 @@ public class SubMenuFragment extends Fragment {
     RecyclerView recyclerViewSubMenu;
     BottomSheetBehavior sheetBehavior;
     FrameLayout flBottomSheet;
+    ArrayList<String> alSubMenuName;
+
+    MaterialTextView mtvBSDentCount, mtvBSCost, mtvBSTime;
 
     public SubMenuFragment() {
         // Required empty public constructor
@@ -90,7 +94,9 @@ public class SubMenuFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_sub_menu, container, false);
+        alSubMenuName = new ArrayList<>(Arrays.asList(dbHandler.getSCByMCNameMainTable(mMainCategory).split(",")));
         initViews(view);
+
         return view;
     }
 
@@ -105,14 +111,22 @@ public class SubMenuFragment extends Fragment {
             mLinearLayoutManager.setOrientation(RecyclerView.VERTICAL);
             // In landscape
         } else {
-            mLinearLayoutManager = new GridLayoutManager(getContext(), 2);
+            if (alSubMenuName.size() >= 8)
+                mLinearLayoutManager = new GridLayoutManager(getContext(), 2);
+            else
+                mLinearLayoutManager = new GridLayoutManager(getContext(), 1);
             mLinearLayoutManager.setOrientation(RecyclerView.VERTICAL);
             // In portrait
         }
-        recyclerViewSubMenu.setLayoutParams(new CoordinatorLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        recyclerViewSubMenu.setLayoutParams(new LinearLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         recyclerViewSubMenu.setHasFixedSize(true);
         recyclerViewSubMenu.setLayoutManager(mLinearLayoutManager);
         flBottomSheet = view.findViewById(R.id.bottom_sheet);
+
+        mtvBSDentCount = flBottomSheet.findViewById(R.id.mtv_bs_dent_count);
+        mtvBSCost = flBottomSheet.findViewById(R.id.mtv_bs_cost);
+        mtvBSTime = flBottomSheet.findViewById(R.id.mtv_bs_time);
+
         sheetBehavior = BottomSheetBehavior.from(flBottomSheet);
 
         sheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -142,6 +156,8 @@ public class SubMenuFragment extends Fragment {
 
             }
         });
+
+        loadItems();
         /*ArrayList<DataBaseHelper> alDB = new ArrayList<>(dbHandler.getSCFromSTByMCName(mMainCategory));
         ArrayList<String> alSubMenuName = new ArrayList<>();
         ArrayList<String> alSubMenuImagePath = new ArrayList<>();
@@ -155,31 +171,9 @@ public class SubMenuFragment extends Fragment {
         }*/
 
 
-        final ArrayList<String> alSubMenuName = new ArrayList<>(Arrays.asList(dbHandler.getSCByMCNameMainTable(mMainCategory).split(",")));
 
-        /*final Runnable r = new Runnable() {
-            public void run() {
-
-            }
-        };
-        r.run();*/
+        /*final ArrayList<String> alSubMenuName = new ArrayList<>(Arrays.asList(dbHandler.getSCByMCNameMainTable(mMainCategory).split(",")));
         ArrayList<DataBaseHelper> alDB = new ArrayList<>(dbHandler.getImagePathFromServiceTable(mMainCategory));
-        //ArrayList<String> alSubMenuName = new ArrayList<>();
-        //ArrayList<String> alSubMenuImagePath = new ArrayList<>();
-        /*for (int i = 0; i < alDB.size(); i++) {
-            for (int j = 0; j < alSubMenuName.size(); j++)
-                if (alDB.get(i).get_sub_category().equals(alSubMenuName.get(j))) {
-                    //alSubMenuImagePath.add(alDB.get(i).get_image_path());
-                    String sImagePath = alDB.get(i).get_image_path();
-                    if (sImagePath.contains(",")) {
-                        sImagePath = alDB.get(i).get_image_path().split(",")[0];
-                    }
-                    alSubMenuImagePath.add(sImagePath);
-                    break;
-                } else
-                    alSubMenuImagePath.add("");
-        }*/
-        //HashMap<String, String> hmSCWithImagePath = new HashMap<>();
         HashMap<String, SubMenuRVData> hmSCWithImagePath = new HashMap<>();
         float fTotalTime = 0;
         float fTotalCost = 0;
@@ -204,22 +198,20 @@ public class SubMenuFragment extends Fragment {
         tvCost.setText(String.valueOf(fTotalCost));
         tvTime.setText(String.valueOf(fTotalTime));
 
-       /* alSubMenuName.add("Roof");
+       *//* alSubMenuName.add("Roof");
         alSubMenuName.add("Hood");
         alSubMenuName.add("Front door left");
         alSubMenuName.add("Front door right");
         alSubMenuName.add("Back door left");
-        alSubMenuName.add("Back door right");*/
+        alSubMenuName.add("Back door right");*//*
 
         //SubMenuRVAdapter imageViewRVAdapter = new SubMenuRVAdapter(getContext(), recyclerViewSubMenu, mMainCategory, alSubMenuName, alSubMenuImagePath);
         SubMenuRVAdapter imageViewRVAdapter = new SubMenuRVAdapter(getContext(), recyclerViewSubMenu, mMainCategory, alSubMenuName, hmSCWithImagePath);
-        recyclerViewSubMenu.setAdapter(imageViewRVAdapter);
+        recyclerViewSubMenu.setAdapter(imageViewRVAdapter);*/
     }
 
-    @Override
-    public void onResume(){
-        super.onResume();
-        /*final ArrayList<String> alSubMenuName = new ArrayList<>(Arrays.asList(dbHandler.getSCByMCNameMainTable(mMainCategory).split(",")));
+    private void loadItems() {
+        //final ArrayList<String> alSubMenuName = new ArrayList<>(Arrays.asList(dbHandler.getSCByMCNameMainTable(mMainCategory).split(",")));
 
         ArrayList<DataBaseHelper> alDB = new ArrayList<>(dbHandler.getImagePathFromServiceTable(mMainCategory));
         HashMap<String, SubMenuRVData> hmSCWithImagePath = new HashMap<>();
@@ -244,8 +236,12 @@ public class SubMenuFragment extends Fragment {
         tvCost.setText(String.valueOf(fTotalCost));
         tvTime.setText(String.valueOf(fTotalTime));
 
+        mtvBSDentCount.setText(String.valueOf(count));
+        mtvBSCost.setText(String.valueOf(fTotalCost));
+        mtvBSTime.setText(String.valueOf(fTotalTime));
+
         SubMenuRVAdapter imageViewRVAdapter = new SubMenuRVAdapter(getContext(), recyclerViewSubMenu, mMainCategory, alSubMenuName, hmSCWithImagePath);
-        recyclerViewSubMenu.setAdapter(imageViewRVAdapter);*/
+        recyclerViewSubMenu.setAdapter(imageViewRVAdapter);
     }
 
     @Override

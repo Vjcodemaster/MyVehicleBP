@@ -12,18 +12,19 @@
     android:layout_height="match_parent"
     android:background="#00000000"
     tools:context=".SubMenuFragment">
-    <!--<LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">-->
+        android:layout_marginBottom="?attr/actionBarSize"
+        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_sub_menu"
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
-            android:background="@android:color/white"
+            android:background="@drawable/gradient_bg"
             android:layout_height="match_parent"
             android:layout_gravity="center" />
-<!--    </LinearLayout>-->
+    </LinearLayout>
 
     <include
         android:id="@+id/bottom_sheet"

@@ -18,12 +18,11 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import app_utility.Constants;
-import app_utility.DataBaseHelper;
 import app_utility.DatabaseHandler;
 import app_utility.OnFragmentInteractionListener;
 import app_utility.ZoomOutPageTransformer;
 
-import static app_utility.StaticReferenceClass.UPDATE_IMAGE_PATH;
+import static app_utility.StaticReferenceClass.VIEWPAGER_POSITION_CHANGE;
 
 
 /**
@@ -34,7 +33,7 @@ import static app_utility.StaticReferenceClass.UPDATE_IMAGE_PATH;
  * Use the {@link TransitionFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TransitionFragment extends Fragment implements OnFragmentInteractionListener{
+public class TransitionFragment extends Fragment implements OnFragmentInteractionListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -48,7 +47,7 @@ public class TransitionFragment extends Fragment implements OnFragmentInteractio
 
     private ViewPager viewPagerTransition;
     private LinearLayout llBubbleParentTransition;
-    private ImageView ivRight, ivLeft;
+    private ImageView ivRightArrow, ivLeftArrow;
 
     private ArrayList<String> alImagePath;
     private ZoomOutPageTransformer zoomOutPageTransformer;
@@ -124,8 +123,8 @@ public class TransitionFragment extends Fragment implements OnFragmentInteractio
         viewPagerTransition.setOffscreenPageLimit(alImagePath.size() - 1);
 
         llBubbleParentTransition = view.findViewById(R.id.ll_bubble_parent_transition);
-        ivLeft = view.findViewById(R.id.iv_left);
-        ivRight = view.findViewById(R.id.iv_right);
+        ivLeftArrow = view.findViewById(R.id.iv_left);
+        ivRightArrow = view.findViewById(R.id.iv_right);
     }
 
     private void initListeners() {
@@ -151,6 +150,8 @@ public class TransitionFragment extends Fragment implements OnFragmentInteractio
                         alBubbleViews.get(i).setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_holo, null));
                     }
                 }
+                handleArrow(position);
+                DentInfoFragment.mListener.onFragmentChange(VIEWPAGER_POSITION_CHANGE, String.valueOf(position), false, null);
             }
 
             @Override
@@ -159,17 +160,19 @@ public class TransitionFragment extends Fragment implements OnFragmentInteractio
             }
         });
 
-        ivLeft.setOnClickListener(new View.OnClickListener() {
+        ivLeftArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 viewPagerTransition.setCurrentItem(viewPagerTransition.getCurrentItem() - 1);
+                //handleArrow(viewPagerTransition.getCurrentItem());
             }
         });
 
-        ivRight.setOnClickListener(new View.OnClickListener() {
+        ivRightArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 viewPagerTransition.setCurrentItem(viewPagerTransition.getCurrentItem() + 1);
+                //handleArrow(viewPagerTransition.getCurrentItem());
             }
         });
     }
@@ -178,9 +181,16 @@ public class TransitionFragment extends Fragment implements OnFragmentInteractio
         TransitionImagePagerAdapter dentInfoImagePagerAdapter = new TransitionImagePagerAdapter(getContext(), alImagePath);
         viewPagerTransition.setAdapter(dentInfoImagePagerAdapter);
 
+        /*if(alImagePath.size()==1){
+            ivLeftArrow.setVisibility(View.GONE);
+            ivRightArrow.setVisibility(View.GONE);
+        }*/
         for (int i = 0; i < alImagePath.size(); i++) {
             addNewBubble();
         }
+        viewPagerTransition.setCurrentItem(Integer.valueOf(mParam2));
+        //handleArrow(viewPagerTransition.getCurrentItem());
+        handleArrow(Integer.valueOf(mParam2));
     }
 
     private void addNewBubble() {
@@ -204,6 +214,33 @@ public class TransitionFragment extends Fragment implements OnFragmentInteractio
         ImageView imageView = alBubbleViews.get(alBubbleViews.size() - 1);
         llBubbleParentTransition.removeView(imageView);
         alBubbleViews.remove(imageView);
+
+        if(alBubbleViews.size()==1){
+            alBubbleViews.get(0).setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_solid, null));
+        }
+    }
+
+    private void handleArrow(int position) {
+        if (position == 0) {
+            if (alImagePath.size() == 1) {
+                ivLeftArrow.setVisibility(View.GONE);
+                ivRightArrow.setVisibility(View.GONE);
+            } else if (alImagePath.size() > 1) {
+                ivLeftArrow.setVisibility(View.GONE);
+                ivRightArrow.setVisibility(View.VISIBLE);
+            }
+        } else if (position >= 1) {
+            if (position == alImagePath.size()) {
+                ivRightArrow.setVisibility(View.GONE);
+                ivLeftArrow.setVisibility(View.GONE);
+            } else if (position == alImagePath.size() - 1) {
+                ivRightArrow.setVisibility(View.GONE);
+                ivLeftArrow.setVisibility(View.VISIBLE);
+            } else {
+                ivLeftArrow.setVisibility(View.VISIBLE);
+                ivRightArrow.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     @Override
@@ -237,6 +274,7 @@ public class TransitionFragment extends Fragment implements OnFragmentInteractio
                 //TransitionImagePagerAdapter.onAdapterInterface.onDelete(pos);
                 alImagePath.remove(pos);
                 removeBubble();
+                handleArrow(pos);
                 TransitionImagePagerAdapter dentInfoImagePagerAdapter = new TransitionImagePagerAdapter(getContext(), alImagePath);
                 viewPagerTransition.setAdapter(dentInfoImagePagerAdapter);
                 DentInfoFragment.onAdapterInterface.onDelete(pos);

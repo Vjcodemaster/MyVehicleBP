@@ -99,7 +99,8 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
     private ViewPager mViewPagerSlideShow;
     DentsRVAdapter dentsRVAdapter;
     FloatingActionButton fabDelete;
-    int nScrollIndex = 0;
+    private int nScrollIndex = 0;
+    private int nCurrentPosition = 0;
     ArrayList<String> alImagePath = new ArrayList<>();
     ArrayList<DentsRVData> alDentsData = new ArrayList<>();
 
@@ -183,10 +184,11 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
 
 
         //alDentsData.addAll(Arrays.asList(alDB.get(0).get_individual_length().split(",")));
-
+        alBubbleViews = new ArrayList<>();
         dentInfoImagePagerAdapter = new DentInfoImagePagerAdapter(getContext(), alImagePath);
-        mViewPagerSlideShow.setOffscreenPageLimit(alImagePath.size() - 1);
+        mViewPagerSlideShow.setOffscreenPageLimit(2);
         mViewPagerSlideShow.setAdapter(dentInfoImagePagerAdapter);
+        mViewPagerSlideShow.setCurrentItem(nCurrentPosition);
 
         if (alImagePath.size() > 0) {
             for (int i = 0; i < alImagePath.size(); i++) {
@@ -236,7 +238,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
         recyclerViewDentsInfo = view.findViewById(R.id.rv_dents_info);
 
         mViewPagerSlideShow = view.findViewById(R.id.viewpager_slideshow);
-        mViewPagerSlideShow.setOffscreenPageLimit(alImagePath.size() - 1);
+        mViewPagerSlideShow.setOffscreenPageLimit(2);
 
         fabDelete = view.findViewById(R.id.fab_delete);
         fabDelete.hide();
@@ -412,6 +414,10 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
         ImageView imageView = alBubbleViews.get(alBubbleViews.size() - 1);
         llBubbleParent.removeView(imageView);
         alBubbleViews.remove(imageView);
+
+        /*if(alBubbleViews.size()==1){
+            alBubbleViews.get(0).setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.bubble_solid, null));
+        }*/
     }
 
     /*private void fetchAllRVData() {
@@ -509,7 +515,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
                 //DentsRVAdapter.onAdapterInterface.onAdapterCall(ADD_ALL_DATA);
                 FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
                 //Fragment transitionFragment = TransitionFragment.newInstance(String.valueOf(ID), "", alImagePath);
-                Fragment transitionFragment = TransitionFragment.newInstance(String.valueOf(1), "", alImagePath);
+                Fragment transitionFragment = TransitionFragment.newInstance(String.valueOf(1), String.valueOf(mViewPagerSlideShow.getCurrentItem()), alImagePath);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     setSharedElementReturnTransition(TransitionInflater.from(
                             getActivity()).inflateTransition(R.transition.change_image_trans));
@@ -564,7 +570,13 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
 
     @Override
     public void onFragmentChange(int nCase, String sCase, boolean isVisible, Uri uri) {
-
+        Constants constants = Constants.values()[nCase];
+        switch (constants) {
+            case VIEWPAGER_POSITION_CHANGE:
+                //mViewPagerSlideShow.setCurrentItem(Integer.valueOf(sCase));
+                nCurrentPosition = Integer.valueOf(sCase);
+                break;
+        }
     }
 
     @Override
@@ -574,7 +586,7 @@ public class DentInfoFragment extends Fragment implements OnAdapterInterface, On
             case SET_URI:
                 alImagePath.add(uri.getPath());
                 DentInfoImagePagerAdapter dentInfoImagePagerAdapter = new DentInfoImagePagerAdapter(getContext(), alImagePath);
-                mViewPagerSlideShow.setOffscreenPageLimit(alImagePath.size() - 1);
+                mViewPagerSlideShow.setOffscreenPageLimit(2);
                 mViewPagerSlideShow.setAdapter(dentInfoImagePagerAdapter);
                 if (alImagePath.size() > 0) {
                     tvPhotoStatus.setVisibility(View.GONE);
